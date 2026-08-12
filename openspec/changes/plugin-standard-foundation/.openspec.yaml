@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-08-12
+goal: Stabilize plugin contracts, trust boundaries, manifests, isolation
+  semantics, and adapter prerequisites before SDK extraction.
