@@ -19,7 +19,7 @@ git fetch upstream main
 uv run python scripts/sync_upstream.py
 ```
 
-The script creates a dated `upstream-sync/...` branch, merges `upstream/main` without committing, and runs the compatibility and focused-test gates. A conflict or failed gate aborts the merge and returns to the original branch.
+The script creates a dated `upstream-sync/...` branch, merges `upstream/main` without committing, and runs the focused-test gates. A conflict or failed gate aborts the merge and returns to the original branch.
 
 After reviewing the merge and running the full suite, commit and push the branch manually. Do not merge it until CI passes and the changes have been checked for conflicts with Oh My Vibe memory, skills, configuration, commands, and state paths. Intentional Oh My Vibe edits are protected by review and compatibility gates, not by blindly preferring either side of a merge.
 
@@ -28,13 +28,11 @@ For automation, the scheduled `.github/workflows/upstream-sync.yml` workflow use
 ## Required gates
 
 ```bash
-uv run python scripts/check_omv_compat.py
-uv run python scripts/migrate_omv_config.py path/to/config.toml
 uv lock --check
 uv run pytest
 ```
 
-The compatibility check fails if package metadata exposes `vibe`/`vibe-acp`, if global state defaults to `~/.vibe`, if `VIBE_HOME` is treated as the user override, or if runtime update instructions point at `mistral-vibe`.
+Branding and upstream-compatibility invariants are validated in the separate branding/upstream synchronization change, not in this safety/plugin change.
 
 ## Configuration migration
 
