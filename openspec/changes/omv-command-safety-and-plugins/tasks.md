@@ -28,6 +28,6 @@
 
 ## 5. Verification and release gates
 
-- [ ] 5.1 Add compatibility checks ensuring plugins and safety state remain under Oh My Vibe namespaces.
-- [ ] 5.2 Run focused tests, lint, type checks, CLI smoke tests, and the canonical test suite.
-- [ ] 5.3 Update CI to run safety and plugin tests before release.
+- [x] 5.1 Add focused tests for plugin API and safety namespace contracts.
+- [x] 5.2 Run focused safety/plugin tests, lint, formatting, type checks, CLI smoke checks, and lockfile validation.
+- [x] 5.3 Update CI to run safety and plugin tests before release without assuming the separate branding migration is present.

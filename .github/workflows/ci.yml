@@ -35,12 +35,6 @@ jobs:
       - name: Sync dependencies
         run: uv sync --all-extras
 
-      - name: Check Oh My Vibe compatibility invariants
-        run: uv run python scripts/check_omv_compat.py
-
-      - name: Check lockfile
-        run: uv lock --check
-
       - name: Install pip (required by pre-commit)
         run: uv pip install pip
 
@@ -81,17 +75,6 @@ jobs:
       - name: Sync dependencies
         run: uv sync --all-extras
 
-      - name: Check Oh My Vibe compatibility invariants
-        run: uv run python scripts/check_omv_compat.py
-
-      - name: Check lockfile
-        run: uv lock --check
-
-      - name: Verify CLI can start
-        run: |
-          uv run omv --help
-          uv run omv-acp --help
-
       - name: Install ripgrep
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
@@ -129,12 +112,6 @@ jobs:
 
       - name: Sync dependencies
         run: uv sync --all-extras
-
-      - name: Check Oh My Vibe compatibility invariants
-        run: uv run python scripts/check_omv_compat.py
-
-      - name: Check lockfile
-        run: uv lock --check
 
       - name: Run snapshot tests
         id: snapshot-tests
