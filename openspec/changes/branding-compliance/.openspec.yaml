@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-08-12
+goal: Make Oh My Vibe the canonical product identity without silently moving or
+  deleting existing Vibe state.
