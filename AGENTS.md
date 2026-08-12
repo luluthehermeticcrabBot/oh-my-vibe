@@ -27,12 +27,24 @@ When creating or editing an ADR, follow the `write-vibe-adr` skill and keep the 
 
 Always go through `uv` — never invoke bare `python` or `pip`.
 
-- `uv run vibe` / `uv run vibe-acp` — the two entry points.
+- `uv run omv` / `uv run omv-acp` — the two entry points.
 - `uv run pytest` — full suite (parallel via `pytest-xdist`).
 - `uv run pyright` — strict type check.
 - `uv run ruff check --fix .` and `uv run ruff format .` — run both after every code change and report the files modified.
 - `uv run pre-commit run --all-files` — full lint pass. Install once with `uv tool install pre-commit && uv run pre-commit install`.
 - Useful uv basics: `uv sync --all-extras`, `uv add <pkg>`, `uv remove <pkg>`.
+
+## Oh My Vibe contribution rules
+
+Oh My Vibe preserves vanilla Vibe CLI behavior and documentation where practical, while adding namespaced `omv`/`omv-acp` entry points and isolated `.omv` state. Changes specific to Oh My Vibe must not silently rewrite upstream-only behavior; document compatibility decisions in the relevant Oh My Vibe documentation.
+
+- Update `AGENTS.md`, `README.md`, `CHANGELOG.md`, and relevant documentation for user-visible Oh My Vibe changes.
+- Keep upstream Vibe CLI markdown content intact when adding Oh My Vibe sections; prefer additive notes and clearly labeled differences.
+- Harness-agnostic Oh My Vibe skills belong in `.agents/skills/<name>/SKILL.md`.
+- Harness-specific project skills belong in the native project directory for that harness: `.opencode/skills/`, `.codex/skills/`, `.pi/skills/`, `.claude/skills/`, or `.vibe/skills/`.
+- Do not copy a global Hermes skill merely because it mentions Vibe; copy only skills directly specific to this repository/project.
+- If a Hermes global skill is copied, preserve its original behavior and record the source and portability rationale in the project documentation.
+- Bash safety changes must keep policy, evaluator, sandbox, and fallback state available in structured results; do not rely on parsing `execution_note` for UI or integrations.
 
 ## Project layout & module conventions
 

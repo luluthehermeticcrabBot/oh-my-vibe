@@ -14,6 +14,7 @@ import vibe.core.tools.builtins.bash as bash_module
 from vibe.core.tools.builtins.bash import (
     Bash,
     BashArgs,
+    BashResult,
     BashToolConfig,
     _get_default_denylist,
     _get_default_denylist_standalone,
@@ -625,6 +626,31 @@ def test_bash_config_models_accept_legacy_max_inline_chars_alias():
     )
 
 
+def test_bash_result_display_includes_safety_metadata():
+    result = Bash.get_result_display(
+        ToolResultEvent(
+            tool_call_id="call",
+            tool_name="bash",
+            tool_class=Bash,
+            result=BashResult(
+                command="echo hello",
+                stdout="hello",
+                stderr="",
+                returncode=0,
+                policy_mode="hybrid",
+                evaluator="test-llm",
+                sandboxed=True,
+                sandbox_backend="/usr/bin/bwrap",
+                fallback_applied=False,
+            ),
+        )
+    )
+    assert "policy=hybrid" in result.message
+    assert "evaluator=test-llm" in result.message
+    assert "sandbox=yes" in result.message
+    assert "backend=/usr/bin/bwrap" in result.message
+
+
 def test_bash_output_display_describes_polling_and_running_result():
     adapter = ToolUIDataAdapter(BashOutput)
     call = adapter.get_call_display(
@@ -821,7 +847,7 @@ def test_reset_clear_logs_kills_running_sessions(tmp_path):
 def test_manager_does_not_list_orphans_from_previous_vibe_session(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+    monkeypatch.setenv("OMV_HOME", str(tmp_path))
     sessions_dir = tmp_path / "bash-tool" / "sessions"
     sessions_dir.mkdir(parents=True)
     output_path = sessions_dir / "old.log"
@@ -851,7 +877,7 @@ def test_manager_does_not_list_orphans_from_previous_vibe_session(
 
 
 def test_manager_lists_only_own_family_orphaned_manifests(tmp_path, monkeypatch):
-    monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+    monkeypatch.setenv("OMV_HOME", str(tmp_path))
     sessions_dir = tmp_path / "shell-tool" / "sessions"
     sessions_dir.mkdir(parents=True)
 
@@ -895,7 +921,7 @@ def test_manager_lists_only_own_family_orphaned_manifests(tmp_path, monkeypatch)
 def test_manager_log_relative_path_stays_within_own_session_family(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+    monkeypatch.setenv("OMV_HOME", str(tmp_path))
     sessions_dir = tmp_path / "shell-tool" / "sessions"
     sessions_dir.mkdir(parents=True)
 
@@ -937,7 +963,7 @@ def test_manager_log_relative_path_stays_within_own_session_family(
 
 
 def test_reset_clear_logs_deletes_only_own_family_files(tmp_path, monkeypatch):
-    monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+    monkeypatch.setenv("OMV_HOME", str(tmp_path))
     sessions_dir = tmp_path / "shell-tool" / "sessions"
     sessions_dir.mkdir(parents=True)
 
