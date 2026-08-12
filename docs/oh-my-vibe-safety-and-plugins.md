@@ -64,9 +64,13 @@ The policy layer applies decisions in this order:
 
 This composition is intentionally small and provider-neutral. Analyzer timeout, exceptions, malformed results, and unsupported async results become an approval request rather than an automatic allow. The timeout is bounded by `llm_timeout_seconds` and applies independently to each enabled analyzer.
 
+Timeouts bound the caller's wait, but a Python thread that is already running cannot be forcibly stopped. Analyzer implementations should therefore be trusted, short-lived callables; untrusted or potentially blocking integrations require a separately isolated process boundary.
+
 The optional `LLMAnalyzer` adapter accepts an injected classifier callable. Core Oh My Vibe neither selects a provider nor reads credentials for this adapter. The classifier may return `allow`, `deny`, or `ask` (as a decision value, string, or mapping); invalid output and attempts to select `sandbox` fail closed and are converted to approval requests by the analyzer runner.
 
-Bash results now expose structured `policy_mode`, `evaluator`, `sandboxed`, `sandbox_backend`, `fallback_applied`, and `fallback_reason` fields. The Bash result display includes the policy, evaluator, sandbox state, and backend so an automatic approval is inspectable without parsing free-form notes.
+Bash results now expose structured `policy_mode`, `evaluator`, `sandboxed`, `sandbox_backend`, `fallback_applied`, and `fallback_reason` fields. The Bash result display includes the policy, evaluator, sandbox state, and backend so an automatic approval is inspectable without parsing free-form notes. Managed terminal transport is rejected whenever sandbox policy is enabled and is only delegated after the same core permission check used by local execution; it is not treated as a sandbox substitute.
+
+This change intentionally does not complete the separate branding-compliance migration tracked by issue #2. The safety PR preserves the existing package and executable identity; the branding migration must be reviewed independently before release.
 
 ## Skill portability
 

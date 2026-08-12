@@ -23,7 +23,8 @@
 - [x] 4.2 Implement the advisory analyzer plugin protocol with timeout and fail-to-ask behavior.
 - [x] 4.3 Add an optional LLM analyzer adapter boundary without embedding provider credentials or unsafe auto-allow behavior.
 - [x] 4.4 Include evaluator, sandbox, and fallback information in structured tool results and UI data.
-- [ ] 4.5 Add regression tests for safe, dangerous, ambiguous, timeout, and explicit-human-deny scenarios.
+- [x] 4.5 Add regression tests for safe, dangerous, ambiguous, timeout, and explicit-human-deny scenarios.
+- [x] 4.6 Ensure advisory results cannot bypass core permissions or managed-terminal safety policy.
 
 ## 5. Verification and release gates
 

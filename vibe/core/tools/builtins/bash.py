@@ -593,6 +593,7 @@ class Bash(
         if (
             self._is_unconditionally_allowed(command_parts, outside_dirs)
             and not guardrail_permission
+            and not (advisory is not None and advisory.outcome == Decision.ASK)
         ):
             if (
                 self.config.safety.sandbox in {"auto", "required"}
@@ -611,12 +612,17 @@ class Bash(
                 )
             return PermissionContext(permission=ToolPermission.ALWAYS)
 
-        if advisory is not None and advisory.outcome == Decision.ALLOW:
-            return PermissionContext(permission=ToolPermission.ALWAYS)
-
         required = self._build_required_permissions(command_parts, outside_dirs)
         if guardrail_permission:
             required.extend(guardrail_permission.required_permissions)
+        if advisory is not None and advisory.outcome == Decision.ASK and not required:
+            required.append(
+                self._build_command_required_permission(
+                    invocation_pattern=args.command,
+                    session_pattern=args.command,
+                    label="advisory analyzer requests approval",
+                )
+            )
         if not required:
             return None
 
@@ -666,7 +672,7 @@ class Bash(
             fallback_reason=fallback_reason,
         )
 
-    async def run(  # noqa: PLR0915
+    async def run(  # noqa: PLR0912, PLR0914, PLR0915
         self, args: BashArgs, ctx: InvokeContext | None = None
     ) -> AsyncGenerator[ToolStreamEvent | BashResult, None]:
         timeout = args.timeout or self.config.default_timeout
@@ -678,6 +684,19 @@ class Bash(
             and ctx.tool_io.supports_terminal
             and ctx.session_id is not None
         ):
+            if self.config.safety.sandbox != "off":
+                raise ToolError(
+                    "Managed terminal transport cannot be used while sandbox policy "
+                    "is enabled; use the local subprocess path instead"
+                )
+            permission = self.resolve_permission(args)
+            if (
+                permission is not None
+                and permission.permission != ToolPermission.ALWAYS
+            ):
+                raise ToolError(
+                    "Managed terminal transport cannot bypass Bash safety approval"
+                )
             try:
                 result = await ctx.tool_io.run_shell(
                     ShellCommandRequest(
@@ -703,7 +722,6 @@ class Bash(
                 stderr=result.stderr[:max_bytes],
                 returncode=result.returncode,
                 evaluator="terminal-transport",
-                fallback_reason="sandbox policy is not applied by managed terminal transport",
             )
             return
 
