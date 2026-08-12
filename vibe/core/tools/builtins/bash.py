@@ -5,12 +5,21 @@ from collections.abc import AsyncGenerator
 from functools import lru_cache
 from pathlib import Path
 import shlex
-from typing import ClassVar, final
+import subprocess
+from typing import ClassVar, Literal, final
 
 from pydantic import BaseModel, Field
 from tree_sitter import Language, Node, Parser
 import tree_sitter_bash as tsbash
 
+from vibe.core.plugins import discover_plugins
+from vibe.core.safety.policy import (
+    CommandDecision,
+    Decision,
+    compose_policy_decision,
+    evaluate_advisory_analyzers,
+)
+from vibe.core.safety.sandbox import BubblewrapBackend, FirejailBackend
 from vibe.core.scratchpad import is_scratchpad_path
 from vibe.core.tools.arity import build_session_pattern
 from vibe.core.tools.base import (
@@ -31,7 +40,11 @@ from vibe.core.tools.ui import ToolCallDisplay, ToolResultDisplay, ToolUIData
 from vibe.core.tools.utils import is_path_within_workdir
 from vibe.core.types import ToolResultEvent, ToolStreamEvent
 from vibe.core.utils import is_windows, kill_async_subprocess
-from vibe.core.utils.shell import spawn_shell_command, uses_posix_shell
+from vibe.core.utils.shell import (
+    spawn_command_argv,
+    spawn_shell_command,
+    uses_posix_shell,
+)
 from vibe.utils.io import decode_safe
 from vibe.utils.tool_presentation import ToolEffectKind
 
@@ -279,6 +292,16 @@ def _matches_pattern(command: str, pattern: str) -> bool:
     return command == pattern or command.startswith(pattern + " ")
 
 
+class BashSafetyConfig(BaseModel):
+    sandbox: Literal["off", "auto", "required"] = "off"
+    sandbox_backend: Literal["auto", "bubblewrap", "firejail", "none"] = "auto"
+    network: Literal["none", "project", "host"] = "none"
+    fallback: Literal["ask", "deny", "unsandboxed"] = "ask"
+    policy: Literal["deterministic", "hybrid", "plugin"] = "deterministic"
+    llm_timeout_seconds: float = Field(default=5.0, gt=0, le=60)
+    enabled_plugins: list[str] = Field(default_factory=list)
+
+
 class BashToolConfig(BaseToolConfig):
     permission: ToolPermission = ToolPermission.ASK
     max_output_bytes: int = Field(
@@ -303,6 +326,7 @@ class BashToolConfig(BaseToolConfig):
         default=["sudo"],
         description="Command prefixes that always ASK regardless of arity approval.",
     )
+    safety: BashSafetyConfig = Field(default_factory=BashSafetyConfig)
 
 
 class BashArgs(BaseModel):
@@ -317,6 +341,13 @@ class BashResult(BaseModel):
     stdout: str
     stderr: str
     returncode: int
+    sandboxed: bool = False
+    execution_note: str | None = None
+    policy_mode: str = "deterministic"
+    evaluator: str = "core"
+    sandbox_backend: str | None = None
+    fallback_applied: bool = False
+    fallback_reason: str | None = None
 
 
 class Bash(
@@ -343,7 +374,20 @@ class Bash(
                 success=False, message=event.error or event.skip_reason or "No result"
             )
 
-        return ToolResultDisplay(success=True, verb="Ran", message=event.result.command)
+        metadata = [
+            f"policy={event.result.policy_mode}",
+            f"evaluator={event.result.evaluator}",
+            f"sandbox={'yes' if event.result.sandboxed else 'no'}",
+        ]
+        if event.result.sandbox_backend:
+            metadata.append(f"backend={event.result.sandbox_backend}")
+        if event.result.fallback_applied:
+            metadata.append("fallback=used")
+        return ToolResultDisplay(
+            success=True,
+            verb="Ran",
+            message=f"{event.result.command} ({', '.join(metadata)})",
+        )
 
     @classmethod
     def get_status_text(cls) -> str:
@@ -494,7 +538,34 @@ class Bash(
 
         return required
 
-    def resolve_permission(self, args: BashArgs) -> PermissionContext | None:
+    def _sandbox_backend(self) -> BubblewrapBackend | FirejailBackend | None:
+        safety = self.config.safety
+        if safety.sandbox == "off" or safety.sandbox_backend == "none":
+            return None
+        if safety.sandbox_backend in {"auto", "bubblewrap"}:
+            backend = BubblewrapBackend.detect(network=safety.network)
+            if backend is not None:
+                return backend
+        if safety.sandbox_backend in {"auto", "firejail"}:
+            return FirejailBackend.detect(network=safety.network)
+        return None
+
+    def _advisory_decision(self, command: str) -> CommandDecision | None:
+        if self.config.safety.policy == "deterministic":
+            return None
+        registry = discover_plugins(set(self.config.safety.enabled_plugins))
+        decisions = evaluate_advisory_analyzers(
+            command,
+            list(registry.analyzers.items()),
+            timeout_seconds=self.config.safety.llm_timeout_seconds,
+        )
+        if not decisions:
+            return None
+        return compose_policy_decision(
+            CommandDecision(Decision.ALLOW, "core guardrails passed", "core"), decisions
+        )
+
+    def resolve_permission(self, args: BashArgs) -> PermissionContext | None:  # noqa: PLR0911
         if not uses_posix_shell():
             return None
 
@@ -508,6 +579,11 @@ class Bash(
             and guardrail_permission.permission == ToolPermission.NEVER
         ):
             return guardrail_permission
+        advisory = self._advisory_decision(args.command)
+        if advisory is not None and advisory.outcome == Decision.DENY:
+            return PermissionContext(
+                permission=ToolPermission.NEVER, reason=advisory.reason
+            )
         outside_dirs = _collect_outside_dirs(
             command_parts,
             cwd=self.cwd,
@@ -517,12 +593,36 @@ class Bash(
         if (
             self._is_unconditionally_allowed(command_parts, outside_dirs)
             and not guardrail_permission
+            and not (advisory is not None and advisory.outcome == Decision.ASK)
         ):
+            if (
+                self.config.safety.sandbox in {"auto", "required"}
+                and self._sandbox_backend() is None
+                and self.config.safety.fallback == "ask"
+            ):
+                return PermissionContext(
+                    permission=ToolPermission.ASK,
+                    required_permissions=[
+                        self._build_command_required_permission(
+                            invocation_pattern=args.command,
+                            session_pattern=args.command,
+                            label="sandbox unavailable; approve unsandboxed fallback",
+                        )
+                    ],
+                )
             return PermissionContext(permission=ToolPermission.ALWAYS)
 
         required = self._build_required_permissions(command_parts, outside_dirs)
         if guardrail_permission:
             required.extend(guardrail_permission.required_permissions)
+        if advisory is not None and advisory.outcome == Decision.ASK and not required:
+            required.append(
+                self._build_command_required_permission(
+                    invocation_pattern=args.command,
+                    session_pattern=args.command,
+                    label="advisory analyzer requests approval",
+                )
+            )
         if not required:
             return None
 
@@ -536,7 +636,18 @@ class Bash(
 
     @final
     def _build_result(
-        self, *, command: str, stdout: str, stderr: str, returncode: int
+        self,
+        *,
+        command: str,
+        stdout: str,
+        stderr: str,
+        returncode: int,
+        sandboxed: bool = False,
+        execution_note: str | None = None,
+        evaluator: str = "core",
+        sandbox_backend: str | None = None,
+        fallback_applied: bool = False,
+        fallback_reason: str | None = None,
     ) -> BashResult:
         if returncode != 0:
             error_msg = f"Command failed: {command!r}\n"
@@ -548,10 +659,20 @@ class Bash(
             raise ToolError(error_msg.strip())
 
         return BashResult(
-            command=command, stdout=stdout, stderr=stderr, returncode=returncode
+            command=command,
+            stdout=stdout,
+            stderr=stderr,
+            returncode=returncode,
+            sandboxed=sandboxed,
+            execution_note=execution_note,
+            policy_mode=self.config.safety.policy,
+            evaluator=evaluator,
+            sandbox_backend=sandbox_backend,
+            fallback_applied=fallback_applied,
+            fallback_reason=fallback_reason,
         )
 
-    async def run(
+    async def run(  # noqa: PLR0912, PLR0914, PLR0915
         self, args: BashArgs, ctx: InvokeContext | None = None
     ) -> AsyncGenerator[ToolStreamEvent | BashResult, None]:
         timeout = args.timeout or self.config.default_timeout
@@ -563,6 +684,19 @@ class Bash(
             and ctx.tool_io.supports_terminal
             and ctx.session_id is not None
         ):
+            if self.config.safety.sandbox != "off":
+                raise ToolError(
+                    "Managed terminal transport cannot be used while sandbox policy "
+                    "is enabled; use the local subprocess path instead"
+                )
+            permission = self.resolve_permission(args)
+            if (
+                permission is not None
+                and permission.permission != ToolPermission.ALWAYS
+            ):
+                raise ToolError(
+                    "Managed terminal transport cannot bypass Bash safety approval"
+                )
             try:
                 result = await ctx.tool_io.run_shell(
                     ShellCommandRequest(
@@ -587,12 +721,51 @@ class Bash(
                 stdout=result.stdout[:max_bytes],
                 stderr=result.stderr[:max_bytes],
                 returncode=result.returncode,
+                evaluator="terminal-transport",
             )
             return
 
         proc = None
+        sandboxed = False
+        execution_note: str | None = None
+        sandbox_backend: str | None = None
+        fallback_applied = False
+        fallback_reason: str | None = None
         try:
-            proc = await spawn_shell_command(args.command, cwd=self.cwd)
+            backend = self._sandbox_backend()
+            if backend is not None:
+                try:
+                    proc = await spawn_command_argv(
+                        backend.build_argv(args.command, self.cwd), cwd=self.cwd
+                    )
+                    sandboxed = True
+                    sandbox_backend = backend.executable
+                    execution_note = f"automatically approved by sandbox policy ({backend.executable})"
+                except (OSError, subprocess.SubprocessError) as exc:
+                    if self.config.safety.fallback == "deny":
+                        raise ToolError(
+                            f"Sandbox failed to start; refusing unsandboxed fallback: {exc}"
+                        ) from exc
+                    execution_note = (
+                        "sandbox failed to start; executed unsandboxed after configured "
+                        "fallback approval"
+                    )
+                    fallback_applied = True
+                    fallback_reason = str(exc)
+                    proc = await spawn_shell_command(args.command, cwd=self.cwd)
+            else:
+                if (
+                    self.config.safety.sandbox == "required"
+                    and self.config.safety.fallback == "deny"
+                ):
+                    raise ToolError("Sandbox is required but no backend is available")
+                if self.config.safety.sandbox != "off":
+                    execution_note = (
+                        "executed unsandboxed after configured fallback approval"
+                    )
+                    fallback_applied = True
+                    fallback_reason = "no configured sandbox backend was available"
+                proc = await spawn_shell_command(args.command, cwd=self.cwd)
 
             try:
                 stdout_bytes, stderr_bytes = await asyncio.wait_for(
@@ -620,6 +793,11 @@ class Bash(
                 stdout=stdout,
                 stderr=stderr,
                 returncode=returncode,
+                sandboxed=sandboxed,
+                execution_note=execution_note,
+                sandbox_backend=sandbox_backend,
+                fallback_applied=fallback_applied,
+                fallback_reason=fallback_reason,
             )
 
         except (ToolError, asyncio.CancelledError):

@@ -45,13 +45,13 @@ Then, use uv command below.
 ### Using uv
 
 ```bash
-uv tool install mistral-vibe
+uv tool install oh-my-vibe
 ```
 
 ### Using pip
 
 ```bash
-pip install mistral-vibe
+pip install oh-my-vibe
 ```
 
 ## Table of Contents
@@ -108,6 +108,16 @@ pip install mistral-vibe
 - **Highly Configurable**: Customize models, providers, tool permissions, and UI preferences through a simple `config.toml` file.
 - **Safety First**: Features tool execution approval.
 - **Multiple Built-in Agents**: Choose from different agent profiles tailored for specific workflows.
+
+## Oh My Vibe extensions
+
+Oh My Vibe is a compatibility-preserving distribution of Vibe CLI with additional `omv`/`omv-acp` entry points, isolated `.omv` state, durable memory, upstream synchronization checks, and optional command-safety extensions. Vanilla Vibe CLI behavior remains the default unless an Oh My Vibe feature is explicitly configured.
+
+Project skills that are portable across coding-agent harnesses live under `.agents/skills/`. Skills requiring harness-specific instructions are kept in the corresponding project directory (`.opencode/skills/`, `.codex/skills/`, `.pi/skills/`, `.claude/skills/`, or `.vibe/skills/`). Hermes-global skills are copied only when they are directly specific to Oh My Vibe; otherwise they remain global and are not duplicated here.
+
+For the current safety and plugin configuration, see [Oh My Vibe safety and plugins](docs/oh-my-vibe-safety-and-plugins.md). For the project-specific contribution contract, see [AGENTS.md](AGENTS.md).
+
+Bash safety results expose machine-readable policy/evaluator/sandbox/fallback metadata, while the UI shows a concise summary of that state. This makes automatic approvals inspectable without changing vanilla Vibe's default approval behavior.
 
 ### Built-in Agents
 
@@ -881,10 +891,10 @@ enable_notifications = false
 
 ### Custom Vibe Home Directory
 
-By default, Vibe stores its configuration in `~/.vibe/`. You can override this by setting the `VIBE_HOME` environment variable:
+By default, Oh My Vibe stores its configuration in `~/.omv/`. You can override this by setting the `OMV_HOME` environment variable:
 
 ```bash
-export VIBE_HOME="/path/to/custom/vibe/home"
+export OMV_HOME="/path/to/custom/omv/home"
 ```
 
 This affects where Vibe looks for:

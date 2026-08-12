@@ -9,11 +9,14 @@ from pydantic import ValidationError
 import pytest
 
 from tests.mock.utils import collect_result
-from vibe.core.tools.base import BaseToolState, ToolError, ToolPermission
+from vibe.core.safety.policy import CommandDecision, Decision
+from vibe.core.tools.base import BaseToolState, InvokeContext, ToolError, ToolPermission
 import vibe.core.tools.builtins.bash as bash_module
 from vibe.core.tools.builtins.bash import (
     Bash,
     BashArgs,
+    BashResult,
+    BashSafetyConfig,
     BashToolConfig,
     _get_default_denylist,
     _get_default_denylist_standalone,
@@ -47,6 +50,7 @@ from vibe.core.tools.builtins.managed_shell.backend import (
     ManagedShellBackend,
     ManagedShellBackendError,
 )
+from vibe.core.tools.io_port import ShellCommandResult, ToolIOPort
 from vibe.core.tools.permissions import PermissionContext
 from vibe.core.tools.terminal_runtime import TerminalRuntime
 from vibe.core.tools.ui import ToolUIDataAdapter
@@ -625,6 +629,31 @@ def test_bash_config_models_accept_legacy_max_inline_chars_alias():
     )
 
 
+def test_bash_result_display_includes_safety_metadata():
+    result = Bash.get_result_display(
+        ToolResultEvent(
+            tool_call_id="call",
+            tool_name="bash",
+            tool_class=Bash,
+            result=BashResult(
+                command="echo hello",
+                stdout="hello",
+                stderr="",
+                returncode=0,
+                policy_mode="hybrid",
+                evaluator="test-llm",
+                sandboxed=True,
+                sandbox_backend="/usr/bin/bwrap",
+                fallback_applied=False,
+            ),
+        )
+    )
+    assert "policy=hybrid" in result.message
+    assert "evaluator=test-llm" in result.message
+    assert "sandbox=yes" in result.message
+    assert "backend=/usr/bin/bwrap" in result.message
+
+
 def test_bash_output_display_describes_polling_and_running_result():
     adapter = ToolUIDataAdapter(BashOutput)
     call = adapter.get_call_display(
@@ -821,7 +850,7 @@ def test_reset_clear_logs_kills_running_sessions(tmp_path):
 def test_manager_does_not_list_orphans_from_previous_vibe_session(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+    monkeypatch.setenv("OMV_HOME", str(tmp_path))
     sessions_dir = tmp_path / "bash-tool" / "sessions"
     sessions_dir.mkdir(parents=True)
     output_path = sessions_dir / "old.log"
@@ -851,7 +880,7 @@ def test_manager_does_not_list_orphans_from_previous_vibe_session(
 
 
 def test_manager_lists_only_own_family_orphaned_manifests(tmp_path, monkeypatch):
-    monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+    monkeypatch.setenv("OMV_HOME", str(tmp_path))
     sessions_dir = tmp_path / "shell-tool" / "sessions"
     sessions_dir.mkdir(parents=True)
 
@@ -895,7 +924,7 @@ def test_manager_lists_only_own_family_orphaned_manifests(tmp_path, monkeypatch)
 def test_manager_log_relative_path_stays_within_own_session_family(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+    monkeypatch.setenv("OMV_HOME", str(tmp_path))
     sessions_dir = tmp_path / "shell-tool" / "sessions"
     sessions_dir.mkdir(parents=True)
 
@@ -937,7 +966,7 @@ def test_manager_log_relative_path_stays_within_own_session_family(
 
 
 def test_reset_clear_logs_deletes_only_own_family_files(tmp_path, monkeypatch):
-    monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+    monkeypatch.setenv("OMV_HOME", str(tmp_path))
     sessions_dir = tmp_path / "shell-tool" / "sessions"
     sessions_dir.mkdir(parents=True)
 
@@ -1128,6 +1157,83 @@ def test_find_execution_predicate_does_not_override_denylist():
     assert isinstance(permission, PermissionContext)
     assert permission.permission is ToolPermission.NEVER
     assert "matches denylist pattern 'passwd'" in (permission.reason or "")
+
+
+@pytest.mark.skipif(is_windows(), reason="outside-dir permissions are POSIX-only")
+def test_advisory_allow_cannot_bypass_outside_directory(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    outside = tmp_path.parent / "outside.txt"
+    config = BashToolConfig(
+        safety=BashSafetyConfig(policy="hybrid", enabled_plugins=["allow-all"])
+    )
+    bash_tool = Bash(config_getter=lambda: config, state=BaseToolState())
+
+    monkeypatch.setattr(
+        bash_module,
+        "discover_plugins",
+        lambda enabled: type(
+            "Registry",
+            (),
+            {
+                "analyzers": {
+                    "allow-all": lambda command: CommandDecision(
+                        Decision.ALLOW, "safe", "allow-all"
+                    )
+                }
+            },
+        )(),
+    )
+    permission = bash_tool.resolve_permission(BashArgs(command=f'cat "{outside}"'))
+
+    assert isinstance(permission, PermissionContext)
+    assert permission.permission is ToolPermission.ASK
+    assert any(
+        str(outside.parent) in required.label
+        for required in permission.required_permissions
+    )
+
+
+@pytest.mark.skipif(is_windows(), reason="managed bash is POSIX-only")
+@pytest.mark.asyncio
+async def test_managed_terminal_is_rejected_when_sandbox_policy_enabled(bash):
+    class ToolIO:
+        supports_terminal = True
+
+        async def run_shell(self, request):
+            raise AssertionError("managed terminal must not be called")
+
+    config = BashToolConfig(
+        permission=ToolPermission.ALWAYS, safety=BashSafetyConfig(sandbox="required")
+    )
+    tool = Bash(config_getter=lambda: config, state=BaseToolState())
+    ctx = InvokeContext(
+        tool_call_id="call", session_id="session", tool_io=cast(ToolIOPort, ToolIO())
+    )
+
+    with pytest.raises(ToolError, match="sandbox policy"):
+        await collect_result(tool.run(BashArgs(command="echo hello"), ctx))
+
+
+@pytest.mark.skipif(is_windows(), reason="managed bash is POSIX-only")
+@pytest.mark.asyncio
+async def test_managed_terminal_runs_only_after_core_permission(bash):
+    class ToolIO:
+        supports_terminal = True
+
+        async def run_shell(self, request):
+            return ShellCommandResult(stdout="hello\n", stderr="", returncode=0)
+
+    config = BashToolConfig(
+        permission=ToolPermission.ALWAYS, safety=BashSafetyConfig(sandbox="off")
+    )
+    tool = Bash(config_getter=lambda: config, state=BaseToolState())
+    ctx = InvokeContext(
+        tool_call_id="call", session_id="session", tool_io=cast(ToolIOPort, ToolIO())
+    )
+
+    result = await collect_result(tool.run(BashArgs(command="echo hello"), ctx))
+    assert result.stdout == "hello\n"
+    assert result.evaluator == "terminal-transport"
 
 
 @pytest.mark.skipif(is_windows(), reason="outside-dir permissions are POSIX-only")

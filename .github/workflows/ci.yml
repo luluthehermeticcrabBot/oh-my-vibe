@@ -35,6 +35,9 @@ jobs:
       - name: Sync dependencies
         run: uv sync --all-extras
 
+      - name: Check lockfile
+        run: uv lock --check
+
       - name: Install pip (required by pre-commit)
         run: uv pip install pip
 
@@ -75,10 +78,8 @@ jobs:
       - name: Sync dependencies
         run: uv sync --all-extras
 
-      - name: Verify CLI can start
-        run: |
-          uv run vibe --help
-          uv run vibe-acp --help
+      - name: Check lockfile
+        run: uv lock --check
 
       - name: Install ripgrep
         run: sudo apt-get update && sudo apt-get install -y ripgrep

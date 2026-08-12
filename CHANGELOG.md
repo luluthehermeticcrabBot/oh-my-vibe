@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Deterministic command-policy composition that preserves core Bash deny rules, honors explicit human denial, and treats plugin/analyzer results as advisory.
+- Advisory analyzer execution now has bounded timeouts and converts analyzer failures or malformed results into human approval requests.
+- Added a provider-neutral, credentials-free `LLMAnalyzer` adapter boundary for optional injected classifiers.
+- Bash results and UI displays now expose structured policy, evaluator, sandbox, and fallback metadata.
+- Contributor guidance for preserving vanilla Vibe CLI documentation and placing portable versus harness-specific project skills.
+
 ## [2.24.0] - 2026-08-05
 
 ### Added
