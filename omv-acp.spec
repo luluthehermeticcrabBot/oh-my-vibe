@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
-# Onedir build for vibe-acp — no per-launch extraction overhead.
-# Build: uv run --group build pyinstaller vibe-acp.spec
-# Output: dist/vibe-acp-dir/vibe-acp  (+  dist/vibe-acp-dir/_internal/)
+# Onedir build for omv-acp — no per-launch extraction overhead.
+# Build: uv run --group build pyinstaller omv-acp.spec
+# Output: dist/omv-acp-dir/omv-acp  (+  dist/omv-acp-dir/_internal/)
 # UPX stays off: it rewrites the Mach-O header and invalidates the macOS code signature.
 
 import sys
@@ -55,7 +55,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='vibe-acp',
+    name='omv-acp',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -77,5 +77,5 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name='vibe-acp-dir',
+    name='omv-acp-dir',
 )

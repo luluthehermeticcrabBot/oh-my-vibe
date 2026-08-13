@@ -30,7 +30,7 @@ uv export --no-hashes --no-dev --no-emit-project --frozen --format requirements.
 uv export --only-group build --no-emit-project --no-hashes --frozen --format requirements.txt
 ```
 
-The pinned `[project].dependencies` is what `uv build` reads in `.github/workflows/release.yml`, so the wheel published to PyPI carries `Requires-Dist:` entries pinned to exact versions (with environment markers preserved). End users installing `mistral-vibe` from PyPI get the same dependency set the team tested against.
+The pinned `[project].dependencies` is what `uv build` reads in `.github/workflows/release.yml`, so the wheel published to PyPI carries `Requires-Dist:` entries pinned to exact versions (with environment markers preserved). End users installing `oh-my-vibe` from PyPI get the same dependency set the team tested against.
 
 The pinned `[dependency-groups].build` is what `uv sync --no-dev --group build` reads in `.github/workflows/build-and-upload.yml`, so the PyInstaller binaries on each release tag are built against the exact same PyInstaller / truststore versions every time.
 

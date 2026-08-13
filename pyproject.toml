@@ -1,11 +1,11 @@
 [project]
-name = "mistral-vibe"
+name = "oh-my-vibe"
 version = "2.24.0"
-description = "Minimal CLI coding agent by Mistral"
+description = "Oh My Vibe, a downstream CLI coding assistant"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
-authors = [{ name = "Mistral AI" }]
+authors = [{ name = "Oh My Vibe contributors" }]
 keywords = [
     "ai",
     "cli",
@@ -127,10 +127,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/mistralai/mistral-vibe"
-Repository = "https://github.com/mistralai/mistral-vibe"
-Issues = "https://github.com/mistralai/mistral-vibe/issues"
-Documentation = "https://github.com/mistralai/mistral-vibe#readme"
+Homepage = "https://github.com/luluthehermeticcrabBot/oh-my-vibe"
+Repository = "https://github.com/luluthehermeticcrabBot/oh-my-vibe"
+Issues = "https://github.com/luluthehermeticcrabBot/oh-my-vibe/issues"
+Documentation = "https://github.com/luluthehermeticcrabBot/oh-my-vibe#readme"
 
 [build-system]
 requires = ["hatchling==1.31.0", "hatch-vcs==0.5.0", "editables==0.6"]
@@ -143,9 +143,9 @@ allow-direct-references = true
 include = ["vibe/"]
 
 [project.scripts]
-vibe = "vibe.cli.entrypoint:main"
-vibe-acp = "vibe.acp.entrypoint:main"
-vibe-app-server = "vibe.app_server.stdio:main"
+omv = "vibe.cli.entrypoint:main"
+omv-acp = "vibe.acp.entrypoint:main"
+omv-app-server = "vibe.app_server.stdio:main"
 
 [tool.uv]
 exclude-newer = "2 days"

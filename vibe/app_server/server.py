@@ -979,7 +979,7 @@ class AppServer:
         self._client_capabilities = params.capabilities
         self._initialization = InitializationState.INITIALIZE_RECEIVED
         return InitializeResponse(
-            server_info=ServerInfo(name="vibe-app-server", version=__version__),
+            server_info=ServerInfo(name="omv-app-server", version=__version__),
             capabilities=ServerCapabilities(
                 methods=list(SERVER_METHODS),
                 callback_kinds=["approval", "user_input"],

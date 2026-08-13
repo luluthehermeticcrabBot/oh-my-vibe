@@ -79,11 +79,11 @@ press. `Ctrl+Z` suspends on POSIX (resume with `fg`).
 ### Update
 
 Vibe never updates silently. With `enable_update_checks = true` (default), it
-polls PyPI for `mistral-vibe` daily and prompts on the next launch when a
-newer release exists; accepting runs `uv tool upgrade mistral-vibe`, then
-`brew upgrade mistral-vibe` as a fallback. Disable via `enable_update_checks
+polls PyPI for `oh-my-vibe` daily and prompts on the next launch when a
+newer release exists; accepting runs `uv tool upgrade oh-my-vibe`, then
+`brew upgrade oh-my-vibe` as a fallback. Disable via `enable_update_checks
 = false`. Run `vibe --check-upgrade` to check immediately, prompt to install a newer
-version if one exists, and exit. Initial install: `uv tool install mistral-vibe`.
+version if one exists, and exit. Initial install: `uv tool install oh-my-vibe`.
 
 ### Version
 

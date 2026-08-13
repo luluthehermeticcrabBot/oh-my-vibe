@@ -1,7 +1,7 @@
 ---
-name: Mistral Vibe
-description: "Download, install, and run Mistral Vibe"
-author: Mistral AI
+name: Oh My Vibe
+description: "Run Oh My Vibe in a GitHub Actions workflow"
+author: Oh My Vibe contributors
 
 inputs:
   prompt:
@@ -10,7 +10,7 @@ inputs:
     default: |
       You are a helpful assistant
   MISTRAL_API_KEY:
-    description: API Key for AI Studio
+    description: API key for the configured provider
     required: true
   install_python:
     description: |
@@ -40,14 +40,14 @@ runs:
     - name: Install uv
       uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
 
-    - name: Install Mistral Vibe
+    - name: Install Oh My Vibe
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
         uv sync --locked --all-extras --dev
 
-    - name: Run Mistral Vibe
-      id: run-mistral-vibe
+    - name: Run Oh My Vibe
+      id: run-oh-my-vibe
       shell: bash
       working-directory: ${{ github.action_path }}
       env:
@@ -55,5 +55,5 @@ runs:
         PROMPT_INPUT: "${{ inputs.prompt }}"
       run: |
         cd "${{ github.workspace }}"
-        uv run --directory "${{ github.action_path }}" vibe \
+        uv run --directory "${{ github.action_path }}" omv \
           -p "$PROMPT_INPUT"

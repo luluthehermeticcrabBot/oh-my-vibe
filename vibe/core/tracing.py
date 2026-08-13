@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 from vibe.observability.logging import logger
 
 VIBE_TRACER_NAME = "mistral_vibe"
-VIBE_AGENT_NAME = "mistral-vibe"
+VIBE_AGENT_NAME = "oh-my-vibe"
 MISTRAL_OTEL_PATH = "/telemetry"
 VIBE_PROVIDER_API_STYLE = "vibe.provider.api_style"
 VIBE_REQUEST_CALL_TYPE = "vibe.request.call_type"

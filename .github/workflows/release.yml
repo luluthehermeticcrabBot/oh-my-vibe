@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/mistral-vibe
+      url: https://pypi.org/p/oh-my-vibe
     permissions:
       id-token: write
       contents: read
@@ -49,5 +49,5 @@ jobs:
           path: dist/
 
       - name: Publish distribution to PyPI
-        if: github.repository == 'mistralai/mistral-vibe'
+        if: github.repository == 'luluthehermeticcrabBot/oh-my-vibe'
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0

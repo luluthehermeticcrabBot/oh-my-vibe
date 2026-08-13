@@ -97,7 +97,7 @@ async def _spawn_vibe_acp(env: dict[str, str]) -> asyncio.subprocess.Process:
     return await asyncio.create_subprocess_exec(
         "uv",
         "run",
-        "vibe-acp",
+        "omv-acp",
         stdin=aio_subprocess.PIPE,
         stdout=aio_subprocess.PIPE,
         stderr=aio_subprocess.PIPE,
@@ -122,7 +122,7 @@ async def _terminate_process(proc: asyncio.subprocess.Process) -> None:
 def _build_env(vibe_home_dir: Path, *, include_api_key: bool) -> dict[str, str]:
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
-    env["VIBE_HOME"] = str(vibe_home_dir)
+    env["OMV_HOME"] = str(vibe_home_dir)
     env["VIBE_TEST_DISABLE_KEYRING"] = "1"
 
     vibe_home_dir.mkdir(parents=True, exist_ok=True)
@@ -195,8 +195,8 @@ async def test_vibe_acp_initialize_and_new_session(vibe_home_dir: Path) -> None:
 
     try:
         assert initialize_response.protocol_version == PROTOCOL_VERSION
-        assert initialize_response.agent_info.name == "@mistralai/mistral-vibe"
-        assert initialize_response.agent_info.title == "Mistral Vibe"
+        assert initialize_response.agent_info.name == "@oh-my-vibe/omv"
+        assert initialize_response.agent_info.title == "Oh My Vibe"
 
         config_schema = await asyncio.wait_for(
             conn.ext_method("config/schema", {}), timeout=10
@@ -226,7 +226,7 @@ async def test_vibe_acp_bootstraps_default_files(vibe_home_dir: Path) -> None:
     finally:
         await _terminate_process(proc)
     assert (vibe_home_dir / "config.toml").is_file()
-    assert (vibe_home_dir / "vibehistory").is_file()
+    assert (vibe_home_dir / "omv_history").is_file()
 
 
 @pytest.mark.asyncio
@@ -289,11 +289,11 @@ async def test_vibe_acp_initialize_exposes_terminal_auth_when_supported(
         assert browser_auth_method.description == BROWSER_AUTH_DESCRIPTION
 
         auth_method = initialize_response.auth_methods[1]
-        assert auth_method.id == "vibe-setup"
+        assert auth_method.id == "omv-setup"
         assert auth_method.field_meta is not None
 
         terminal_auth = auth_method.field_meta["terminal-auth"]
-        assert terminal_auth["label"] == "Mistral Vibe Setup"
+        assert terminal_auth["label"] == "Oh My Vibe Setup"
         assert terminal_auth["command"]
         assert terminal_auth["args"]
         assert terminal_auth["args"][-1:] == ["--setup"]
@@ -311,7 +311,7 @@ def test_vibe_acp_setup_shows_onboarding_and_exits_on_cancel(
     captured = io.StringIO()
     child = pexpect.spawn(
         "uv",
-        ["run", "vibe-acp", "--setup"],
+        ["run", "omv-acp", "--setup"],
         cwd=str(TESTS_ROOT.parent),
         env=env,
         encoding="utf-8",

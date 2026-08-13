@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Smoke tests for the built vibe binary.
+"""Smoke tests for the built omv binary.
 
 Usage: python tests/cli/smoke_binary.py <binary-dir>
 
@@ -34,7 +34,7 @@ def _fail(msg: str) -> NoReturn:
 
 def _isolated_env(vibe_home: Path) -> dict[str, str]:
     env = os.environ.copy()
-    env["VIBE_HOME"] = str(vibe_home)
+    env["OMV_HOME"] = str(vibe_home)
     env["VIBE_TEST_DISABLE_KEYRING"] = "1"
     env["TERM"] = env.get("TERM") or "xterm-256color"
     env.pop("MISTRAL_API_KEY", None)
@@ -181,7 +181,7 @@ def test_programmatic_missing_api_key(binary: Path) -> None:
         result = subprocess.run(
             [str(binary), "-p", "hello"],
             capture_output=True,
-            env=_isolated_env(Path(tmp) / ".vibe"),
+            env=_isolated_env(Path(tmp) / ".omv"),
             text=True,
             timeout=30,
         )
@@ -401,7 +401,7 @@ def main() -> None:
         sys.exit(1)
 
     binary_dir = Path(sys.argv[1])
-    binary_name = "vibe.exe" if platform.system() == "Windows" else "vibe"
+    binary_name = "omv.exe" if platform.system() == "Windows" else "omv"
     binary = binary_dir / binary_name
 
     if not binary.exists():

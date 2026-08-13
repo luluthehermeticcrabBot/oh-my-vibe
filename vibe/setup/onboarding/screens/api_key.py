@@ -19,10 +19,8 @@ from vibe.setup.auth.api_key_persistence import resolve_api_key_provider
 from vibe.setup.onboarding.base import OnboardingScreen
 
 MISTRAL_PROVIDER_NAME = "mistral"
-MISTRAL_PROVIDER_HELP_NAME = "Mistral Vibe"
-CONFIG_DOCS_URL = (
-    "https://github.com/mistralai/mistral-vibe?tab=readme-ov-file#configuration"
-)
+MISTRAL_PROVIDER_HELP_NAME = "Oh My Vibe"
+CONFIG_DOCS_URL = "https://github.com/luluthehermeticcrabBot/oh-my-vibe?tab=readme-ov-file#configuration"
 
 
 class ApiKeyScreen(OnboardingScreen):
