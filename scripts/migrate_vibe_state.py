@@ -51,7 +51,9 @@ def main() -> int:
     print(f"Destination: {destination}")
     print(f"Files:       {len(files)}")
     if not args.apply:
-        print("Dry run only. Re-run with --apply to copy; the source will not be modified.")
+        print(
+            "Dry run only. Re-run with --apply to copy; the source will not be modified."
+        )
         return 0
 
     destination.mkdir(parents=True, exist_ok=True)
