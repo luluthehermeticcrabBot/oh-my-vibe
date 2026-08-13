@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
-# Onedir build for vibe — no per-launch extraction overhead.
-# Build: uv run --group build pyinstaller vibe.spec
-# Output: dist/vibe-dir/vibe  (+  dist/vibe-dir/_internal/)
+# Onedir build for omv — no per-launch extraction overhead.
+# Build: uv run --group build pyinstaller omv.spec
+# Output: dist/omv-dir/omv  (+  dist/omv-dir/_internal/)
 # UPX stays off: it rewrites the Mach-O header and invalidates the macOS code signature.
 
 import sys
@@ -55,7 +55,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="vibe",
+    name="omv",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -77,5 +77,5 @@ coll = COLLECT(
     strip=False,
     upx=False,
     upx_exclude=[],
-    name="vibe-dir",
+    name="omv-dir",
 )

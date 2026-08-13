@@ -72,7 +72,7 @@ fi
 
 for binary_base in "$@"; do
   zip_bundle "$binary_base"
-  if [ "$os" != "windows" ] && [ "$binary_base" = "vibe-acp" ]; then
+  if [ "$os" != "windows" ] && [ "$binary_base" = "omv-acp" ]; then
     tar_gz_bundle "$binary_base"
   fi
 done

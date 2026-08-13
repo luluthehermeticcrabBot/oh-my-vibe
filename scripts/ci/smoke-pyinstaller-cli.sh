@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-binary_dir="${1:-dist/vibe-dir}"
+binary_dir="${1:-dist/omv-dir}"
 
 if [ -n "${PYTHON_BIN:-}" ]; then
   read -r -a python_cmd <<< "${PYTHON_BIN}"
