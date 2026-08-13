@@ -223,9 +223,9 @@ class TestACPAuthenticate:
         self, acp_agent_loop: VibeAcpAgentLoop
     ) -> None:
         with pytest.raises(
-            InvalidRequestError, match="Unsupported auth method: vibe-setup"
+            InvalidRequestError, match="Unsupported auth method: omv-setup"
         ):
-            await acp_agent_loop.authenticate("vibe-setup")
+            await acp_agent_loop.authenticate("omv-setup")
 
     @pytest.mark.asyncio
     async def test_authenticate_rejects_browser_sign_in_when_unavailable(self) -> None:

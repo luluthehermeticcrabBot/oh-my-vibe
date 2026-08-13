@@ -1267,7 +1267,7 @@ async def test_ui_mistral_option_uses_default_domain_over_configured_custom_urls
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
-    monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+    monkeypatch.setenv("OMV_HOME", str(tmp_path))
     config_file = tmp_path / "config.toml"
     config_file.write_text(
         "\n".join([
@@ -1316,7 +1316,7 @@ async def test_ui_falls_back_to_default_onboarding_context_with_invalid_active_m
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
-    monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+    monkeypatch.setenv("OMV_HOME", str(tmp_path))
     config_file = tmp_path / "config.toml"
     config_file.write_text(
         "\n".join([

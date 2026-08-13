@@ -30,7 +30,7 @@ from vibe.core.config.harness_files import (
 )
 from vibe.core.config.layers.user import UserConfigLayer
 from vibe.core.config.orchestrator import ConfigOrchestrator
-from vibe.core.paths import VIBE_HOME
+from vibe.core.paths import OMV_HOME
 from vibe.core.trusted_folders import trusted_folders_manager
 from vibe.core.types import Backend
 from vibe.setup.onboarding.context import OnboardingContext
@@ -140,7 +140,7 @@ class TestResolveConfigFile:
         from vibe.core.config.harness_files import get_harness_files_manager
 
         mgr = get_harness_files_manager()
-        assert mgr.config_file == VIBE_HOME.path / "config.toml"
+        assert mgr.config_file == OMV_HOME.path / "config.toml"
 
     def test_falls_back_to_global_config_when_local_missing(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -154,14 +154,14 @@ class TestResolveConfigFile:
         from vibe.core.config.harness_files import get_harness_files_manager
 
         mgr = get_harness_files_manager()
-        assert mgr.config_file == VIBE_HOME.path / "config.toml"
+        assert mgr.config_file == OMV_HOME.path / "config.toml"
 
-    def test_respects_vibe_home_env_var(
+    def test_respects_omv_home_env_var(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        assert VIBE_HOME.path != tmp_path
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
-        assert VIBE_HOME.path == tmp_path
+        assert OMV_HOME.path != tmp_path
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
+        assert OMV_HOME.path == tmp_path
 
     def test_returns_none_when_no_sources(self) -> None:
         mgr = HarnessFilesManager(sources=())
@@ -169,7 +169,7 @@ class TestResolveConfigFile:
 
     def test_user_only_returns_global_config(self) -> None:
         mgr = HarnessFilesManager(sources=("user",))
-        assert mgr.config_file == VIBE_HOME.path / "config.toml"
+        assert mgr.config_file == OMV_HOME.path / "config.toml"
 
 
 class TestSaveUpdates:
@@ -403,7 +403,7 @@ class TestMigrateLeavesFindInBashAllowlist:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "applied_migrations": [BASH_READ_ONLY_MIGRATION],
@@ -426,7 +426,7 @@ class TestMigrateLeavesFindInBashAllowlist:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "applied_migrations": [BASH_READ_ONLY_MIGRATION],
@@ -449,7 +449,7 @@ class TestMigrateLeavesFindInBashAllowlist:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {"active_model": "test"}
         with config_file.open("wb") as f:
@@ -471,7 +471,7 @@ class TestMigrateStripsBashAllowlistWildcardSuffix:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "applied_migrations": [BASH_READ_ONLY_MIGRATION],
@@ -499,7 +499,7 @@ class TestMigrateStripsBashAllowlistWildcardSuffix:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "applied_migrations": [BASH_READ_ONLY_MIGRATION],
@@ -522,7 +522,7 @@ class TestMigrateStripsBashAllowlistWildcardSuffix:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "applied_migrations": [BASH_READ_ONLY_MIGRATION],
@@ -549,7 +549,7 @@ class TestMigrateBashReadOnlyDefaults:
     ) -> None:
         from vibe.core.tools.builtins.bash import default_read_only_commands
 
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {"tools": {"bash": {"allowlist": ["echo", "git commit"]}}}
         with config_file.open("wb") as f:
@@ -573,7 +573,7 @@ class TestMigrateBashReadOnlyDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "applied_migrations": [BASH_READ_ONLY_MIGRATION],
@@ -596,7 +596,7 @@ class TestMigrateBashReadOnlyDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {"active_model": "test"}
         with config_file.open("wb") as f:
@@ -618,7 +618,7 @@ class TestMigrateMistralVibeCliLatestDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "models": [
@@ -652,7 +652,7 @@ class TestMigrateMistralVibeCliLatestDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "active_model": "devstral-2",
@@ -681,7 +681,7 @@ class TestMigrateMistralVibeCliLatestDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "models": [
@@ -713,7 +713,7 @@ class TestMigrateMistralVibeCliLatestDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "models": [
@@ -745,7 +745,7 @@ class TestMigrateMistralVibeCliLatestDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "models": [
@@ -782,7 +782,7 @@ class TestMigrateMistralVibeCliLatestDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {"theme": "dark"}
         with config_file.open("wb") as f:
@@ -802,7 +802,7 @@ class TestMigrateMistralVibeCliLatestDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "active_model": "mistral-medium-3.5",
@@ -841,7 +841,7 @@ class TestMigrateMistralVibeCliLatestDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "active_model": "devstral-2",
@@ -875,7 +875,7 @@ class TestMigrateMistralVibeCliLatestDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "active_model": "mistral-medium-3.5",
@@ -908,7 +908,7 @@ class TestMigrateMistralVibeCliLatestDefaults:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "models": [
@@ -939,7 +939,7 @@ class TestMigrateDevstralSmallThinking:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "models": [
@@ -968,7 +968,7 @@ class TestMigrateDevstralSmallThinking:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "models": [
@@ -996,7 +996,7 @@ class TestMigrateDevstralSmallThinking:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "models": [
@@ -1025,7 +1025,7 @@ class TestMigrateDevstralSmallThinking:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "models": [
@@ -1140,7 +1140,7 @@ class TestMistralBrowserAuthConfig:
     def test_legacy_explicit_mistral_provider_backfills_browser_auth_urls_without_changing_backend(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         with config_file.open("wb") as f:
             tomli_w.dump(
@@ -1319,7 +1319,7 @@ class TestOnboardingContextResolution:
     def test_load_prefers_explicit_overrides_over_toml_and_env(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         with config_file.open("wb") as file:
             tomli_w.dump(
@@ -1385,7 +1385,7 @@ class TestOnboardingContextResolution:
     def test_load_preserves_explicit_overrides_when_onboarding_toml_is_invalid(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         config_file.write_text("invalid = [", encoding="utf-8")
 
@@ -1404,7 +1404,7 @@ class TestOnboardingContextResolution:
     def test_load_preserves_explicit_provider_and_model_overrides_when_toml_is_invalid(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         config_file.write_text("invalid = [", encoding="utf-8")
 
@@ -1422,7 +1422,7 @@ class TestOnboardingContextResolution:
     def test_load_preserves_explicit_provider_override_when_toml_is_invalid(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         config_file.write_text("invalid = [", encoding="utf-8")
 
@@ -1544,7 +1544,7 @@ class TestOnboardingContextResolution:
     def test_load_falls_back_when_onboarding_toml_is_invalid(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         config_file.write_text("invalid = [", encoding="utf-8")
 
@@ -1872,7 +1872,7 @@ class TestMigrateRenamedTools:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "tools": {
@@ -1914,7 +1914,7 @@ class TestMigrateRenamedTools:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {
             "tools": {
@@ -1940,7 +1940,7 @@ class TestMigrateRenamedTools:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {"enabled_tools": ["read", "grep"], "disabled_tools": ["search_replace"]}
         with config_file.open("wb") as f:
@@ -1961,7 +1961,7 @@ class TestMigrateRenamedTools:
         monkeypatch: pytest.MonkeyPatch,
         run_migration: Callable[[], None],
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         config_file = tmp_path / "config.toml"
         data = {"tools": {"read_file": {"permission": "always"}}}
         with config_file.open("wb") as f:

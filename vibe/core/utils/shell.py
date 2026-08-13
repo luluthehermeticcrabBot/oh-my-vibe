@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import os
 from pathlib import Path
+import shutil
 
 from vibe.utils.platform import WindowsShellKind, is_windows, resolve_windows_shell
 
@@ -11,6 +12,13 @@ def uses_posix_shell() -> bool:
     if not is_windows():
         return True
     return resolve_windows_shell().kind is WindowsShellKind.BASH
+
+
+def shell_executable() -> str:
+    if is_windows():
+        shell = resolve_windows_shell()
+        return shell.executable or "cmd.exe"
+    return os.environ.get("SHELL") or shutil.which("bash") or "/bin/sh"
 
 
 async def spawn_shell_command(
@@ -55,6 +63,20 @@ async def spawn_shell_command(
     )
 
 
+async def spawn_command_argv(
+    argv: list[str], *, cwd: Path | None = None
+) -> asyncio.subprocess.Process:
+    return await asyncio.create_subprocess_exec(
+        *argv,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        stdin=asyncio.subprocess.DEVNULL,
+        env=_shell_environment(),
+        cwd=cwd or Path.cwd(),
+        start_new_session=True,
+    )
+
+
 def _shell_environment() -> dict[str, str]:
     env = {**os.environ, "CI": "true", "NONINTERACTIVE": "1", "NO_TTY": "1"}
     if is_windows():
@@ -73,4 +95,9 @@ def _shell_environment() -> dict[str, str]:
     }
 
 
-__all__ = ["spawn_shell_command", "uses_posix_shell"]
+__all__ = [
+    "shell_executable",
+    "spawn_command_argv",
+    "spawn_shell_command",
+    "uses_posix_shell",
+]

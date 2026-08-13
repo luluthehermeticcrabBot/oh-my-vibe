@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Mistral Vibe Installation Script
-# This script installs uv if not present and then installs mistral-vibe using uv
+# Oh My Vibe Installation Script
+# This script installs uv if not present and then installs oh-my-vibe using uv
 
 set -euo pipefail
 
@@ -135,36 +135,36 @@ function install_uv() {
     fi
 }
 
-function check_vibe_installed() {
-    if [[ -n "$(find_command_in_path vibe "$ORIGINAL_PATH")" ]]; then
-        info "vibe is already installed"
-        VIBE_INSTALLED=true
+function check_omv_installed() {
+    if [[ -n "$(find_command_in_path omv "$ORIGINAL_PATH")" ]]; then
+        info "omv is already installed"
+        OMV_INSTALLED=true
         return
     fi
 
     local uv_bin_dir
     uv_bin_dir=$(uv tool dir --bin 2>/dev/null || true)
-    if [[ -n "$uv_bin_dir" && -x "$uv_bin_dir/vibe" ]]; then
-        info "vibe is already installed (off PATH) at $uv_bin_dir/vibe"
-        VIBE_INSTALLED=true
+    if [[ -n "$uv_bin_dir" && -x "$uv_bin_dir/omv" ]]; then
+        info "omv is already installed (off PATH) at $uv_bin_dir/omv"
+        OMV_INSTALLED=true
         return
     fi
 
-    VIBE_INSTALLED=false
+    OMV_INSTALLED=false
 }
 
-function install_vibe() {
-    info "Installing mistral-vibe from GitHub repository using uv..."
-    uv tool install mistral-vibe
+function install_omv() {
+    info "Installing oh-my-vibe from GitHub repository using uv..."
+    uv tool install oh-my-vibe
 
-    success "Mistral Vibe installed successfully! (commands: vibe, vibe-acp)"
+    success "Oh My Vibe installed successfully! (commands: omv, omv-acp)"
 }
 
-function update_vibe() {
-    info "Updating mistral-vibe from GitHub repository using uv..."
-    uv tool upgrade mistral-vibe
+function update_omv() {
+    info "Updating oh-my-vibe from GitHub repository using uv..."
+    uv tool upgrade oh-my-vibe
 
-    success "Mistral Vibe updated successfully!"
+    success "Oh My Vibe updated successfully!"
 }
 
 function main() {
@@ -179,7 +179,7 @@ function main() {
     echo "██████████████████░░"
     echo "██████████████████░░"
     echo
-    echo "Starting Mistral Vibe installation..."
+    echo "Starting Oh My Vibe installation..."
     echo
 
     check_platform
@@ -190,35 +190,35 @@ function main() {
         install_uv
     fi
 
-    check_vibe_installed
+    check_omv_installed
 
-    if [[ "$VIBE_INSTALLED" == "false" ]]; then
-        install_vibe
+    if [[ "$OMV_INSTALLED" == "false" ]]; then
+        install_omv
     else
-        update_vibe
+        update_omv
     fi
 
-    if [[ -n "$(find_command_in_path vibe "$ORIGINAL_PATH")" ]]; then
+    if [[ -n "$(find_command_in_path omv "$ORIGINAL_PATH")" ]]; then
         success "Installation completed successfully!"
         echo
-        echo "You can now run vibe with:"
-        echo "  vibe"
+        echo "You can now run Oh My Vibe with:"
+        echo "  omv"
         echo
         echo "Or for ACP mode:"
-        echo "  vibe-acp"
+        echo "  omv-acp"
     else
         local UV_BIN_DIR
-        local VIBE_BIN_PATH=""
+        local OMV_BIN_PATH=""
         UV_BIN_DIR=$(uv tool dir --bin 2>/dev/null || true)
-        if [[ -n "$UV_BIN_DIR" && -x "$UV_BIN_DIR/vibe" ]]; then
-            VIBE_BIN_PATH="$UV_BIN_DIR/vibe"
+        if [[ -n "$UV_BIN_DIR" && -x "$UV_BIN_DIR/omv" ]]; then
+            OMV_BIN_PATH="$UV_BIN_DIR/omv"
         fi
 
-        if [[ -n "$VIBE_BIN_PATH" ]]; then
-            print_missing_path_instructions "vibe" "$VIBE_BIN_PATH"
+        if [[ -n "$OMV_BIN_PATH" ]]; then
+            print_missing_path_instructions "omv" "$OMV_BIN_PATH"
         else
-            error "Installation completed but 'vibe' command not found"
-            error "uv did not expose a 'vibe' executable in the expected tools directory."
+            error "Installation completed but 'omv' command not found"
+            error "uv did not expose an 'omv' executable in the expected tools directory."
             error "Please check your installation and PATH settings"
         fi
         exit 1

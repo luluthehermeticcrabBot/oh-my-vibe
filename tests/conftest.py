@@ -151,12 +151,12 @@ def config_dir(
     monkeypatch: pytest.MonkeyPatch, tmp_path_factory: pytest.TempPathFactory
 ) -> Path:
     tmp_path = tmp_path_factory.mktemp("vibe")
-    config_dir = tmp_path / ".vibe"
+    config_dir = tmp_path / ".omv"
     config_dir.mkdir(parents=True, exist_ok=True)
     config_file = config_dir / "config.toml"
     config_file.write_text(tomli_w.dumps(get_base_config()), encoding="utf-8")
 
-    monkeypatch.setattr("vibe.utils.paths._DEFAULT_VIBE_HOME", config_dir)
+    monkeypatch.setattr("vibe.utils.paths._DEFAULT_OMV_HOME", config_dir)
     agents_dir = tmp_path / ".agents"
     agents_dir.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr("vibe.core.paths._agents_home._DEFAULT_AGENTS_HOME", agents_dir)
@@ -171,7 +171,7 @@ def config_dir(
 
 @pytest.fixture(autouse=True)
 def _reset_trusted_folders_manager(config_dir: Path) -> None:
-    """Prevent the singleton from writing to the real ~/.vibe/trusted_folders.toml.
+    """Prevent the singleton from writing to the real ~/.omv/trusted_folders.toml.
 
     The module-level ``trusted_folders_manager`` captures its file path at import
     time (before any monkeypatch), so it would otherwise target the real home

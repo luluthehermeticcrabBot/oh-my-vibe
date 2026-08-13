@@ -304,15 +304,15 @@ class VibeAcpAgent(AcpAgent):
             auth_methods.append(
                 TerminalAuthMethod(
                     type="terminal",
-                    id="vibe-setup",
+                    id="omv-setup",
                     name="Register your API Key",
-                    description="Register your API Key inside Mistral Vibe",
+                    description="Register your API Key inside Oh My Vibe",
                     args=args,
                     field_meta={
                         "terminal-auth": {
                             "command": command,
                             "args": args,
-                            "label": "Mistral Vibe Setup",
+                            "label": "Oh My Vibe Setup",
                         }
                     },
                 )
@@ -336,9 +336,7 @@ class VibeAcpAgent(AcpAgent):
             ),
             protocol_version=PROTOCOL_VERSION,
             agent_info=Implementation(
-                name="@mistralai/mistral-vibe",
-                title="Mistral Vibe",
-                version=__version__,
+                name="@oh-my-vibe/omv", title="Oh My Vibe", version=__version__
             ),
             auth_methods=cast(Any, auth_methods),
         )

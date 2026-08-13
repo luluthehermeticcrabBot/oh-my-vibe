@@ -25,17 +25,17 @@ if TYPE_CHECKING:
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run the Mistral Vibe interactive CLI",
+        description="Run the Oh My Vibe interactive CLI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Commands:\n"
-            "  mcp            Manage MCP server configuration (vibe mcp --help).\n\n"
+            "  mcp            Manage MCP server configuration (omv mcp --help).\n\n"
             "Environment variables:\n"
-            "  VIBE_HOME       Override the Vibe home directory (default: ~/.vibe)\n"
+            "  OMV_HOME        Override the Oh My Vibe home directory (default: ~/.omv)\n"
             "  LOG_LEVEL       Logging level: DEBUG, INFO, WARNING (default), ERROR, CRITICAL.\n"
-            "                  Logs are written to $VIBE_HOME/logs/vibe.log.\n"
-            "  LOG_MAX_BYTES   Max size of vibe.log before rotation (default: 10485760).\n"
-            "  VIBE_*          Override any config field (e.g. VIBE_ACTIVE_MODEL=local)."
+            "                  Logs are written to $OMV_HOME/logs/omv.log.\n"
+            "  LOG_MAX_BYTES   Max size of omv.log before rotation (default: 10485760).\n"
+            "  OMV_*           Override any config field (e.g. OMV_ACTIVE_MODEL=local)."
         ),
     )
     parser.add_argument(
@@ -110,7 +110,7 @@ def parse_arguments() -> argparse.Namespace:
         metavar="NAME",
         default=None,
         help="Agent to use (builtin: default, plan, accept-edits, auto-approve, "
-        "or custom from ~/.vibe/agents/NAME.toml). Defaults to the "
+        "or custom from ~/.omv/agents/NAME.toml). Defaults to the "
         "'default_agent' config setting in both interactive and programmatic "
         "(-p/--prompt) mode.",
     )
@@ -135,7 +135,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--worktree",
         metavar="NAME",
-        help="Create (or reuse) a git worktree under $VIBE_HOME/worktrees on "
+        help="Create (or reuse) a git worktree under $OMV_HOME/worktrees on "
         "a branch named NAME and run inside it. Implicitly trusted for the "
         "session. Ignored with --setup and --check-upgrade.",
     )

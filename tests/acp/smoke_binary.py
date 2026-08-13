@@ -111,7 +111,7 @@ async def test_acp_initialize(binary: Path) -> None:
     with tempfile.TemporaryDirectory() as tmp:
         vibe_home = Path(tmp) / ".vibe"
         env = os.environ.copy()
-        env["VIBE_HOME"] = str(vibe_home)
+        env["OMV_HOME"] = str(vibe_home)
         env["MISTRAL_API_KEY"] = "smoke-test-mock-key"
         env["VIBE_TEST_DISABLE_KEYRING"] = "1"
 

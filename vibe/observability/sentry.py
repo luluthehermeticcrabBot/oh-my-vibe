@@ -34,7 +34,7 @@ class SentryTarget(StrEnum):
             case SentryTarget.CLI:
                 return "vibe-cli"
             case SentryTarget.ACP:
-                return "vibe-acp"
+                return "omv-acp"
 
 
 # Benign exceptions to drop before reporting: clean Ctrl-C quit, and a broken

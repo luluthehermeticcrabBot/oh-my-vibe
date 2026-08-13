@@ -1,20 +1,20 @@
 # ACP Setup
 
-Mistral Vibe can be used in text editors and IDEs that support [Agent Client Protocol](https://agentclientprotocol.com/overview/clients). Mistral Vibe includes the `vibe-acp` tool.
-Once you have set up `vibe` with the API keys, you are ready to use `vibe-acp` in your editor. Below are the setup instructions for some editors that support ACP.
+Oh My Vibe can be used in text editors and IDEs that support [Agent Client Protocol](https://agentclientprotocol.com/overview/clients). Oh My Vibe includes the `omv-acp` tool.
+Once you have set up `omv` with the API keys, you are ready to use `omv-acp` in your editor. Below are the setup instructions for some editors that support ACP.
 
 ## Zed
 
-For usage in Zed, we recommend using the [Mistral Vibe Zed ACP agent](https://zed.dev/acp/agent/mistral-vibe). Alternatively, you can set up a local install as follows:
+For usage in Zed, use the Oh My Vibe ACP agent. Alternatively, you can set up a local install as follows:
 
-1. Go to `~/.config/zed/settings.json` and, under the `agent_servers` JSON object, add the following key-value pair to invoke the `vibe-acp` command. Here is the snippet:
+1. Go to `~/.config/zed/settings.json` and, under the `agent_servers` JSON object, add the following key-value pair to invoke the `omv-acp` command. Here is the snippet:
 
 ```json
 {
    "agent_servers": {
-      "Mistral Vibe": {
+      "Oh My Vibe": {
          "type": "custom",
-         "command": "vibe-acp",
+         "command": "omv-acp",
          "args": [],
          "env": {}
       }
@@ -41,8 +41,8 @@ For using Mistral Vibe in JetBrains IDEs, you'll need to have the [Jetbrains AI 
 ```json
 {
   "agent_servers": {
-    "Mistral Vibe": {
-      "command": "vibe-acp",
+    "Oh My Vibe": {
+      "command": "omv-acp",
     }
   }
 }
@@ -57,10 +57,10 @@ Add Mistral Vibe in the acp_providers section of your configuration
 ```lua
 {
   acp_providers = {
-    ["mistral-vibe"] = {
-      command = "vibe-acp",
+    ["omv"] = {
+      command = "omv-acp",
       env = {
-         MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY"), -- necessary if you setup Mistral Vibe manually
+         MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY"), -- necessary if you set up Oh My Vibe manually
       },
     }
   }

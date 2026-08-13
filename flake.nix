@@ -1,5 +1,5 @@
 {
-  description = "Mistral Vibe!";
+  description = "Oh My Vibe";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -73,8 +73,8 @@
     in {
 
       packages.default = mkApplication {
-        venv = pythonSet.mkVirtualEnv "mistralai-vibe-env" workspace.deps.default;
-        package = pythonSet.mistral-vibe;
+        venv = pythonSet.mkVirtualEnv "oh-my-vibe-env" workspace.deps.default;
+        package = pythonSet.oh-my-vibe;
       };
 
       apps = {

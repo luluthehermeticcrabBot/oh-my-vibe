@@ -14,13 +14,16 @@ class GlobalPath:
         return self._resolver()
 
 
-_DEFAULT_VIBE_HOME = Path.home() / ".vibe"
+_DEFAULT_OMV_HOME = Path.home() / ".omv"
 
 
-def get_vibe_home() -> Path:
-    if vibe_home := os.getenv("VIBE_HOME"):
-        return Path(vibe_home).expanduser().resolve()
-    return _DEFAULT_VIBE_HOME
+def get_omv_home() -> Path:
+    if omv_home := os.getenv("OMV_HOME"):
+        return Path(omv_home).expanduser().resolve()
+    return _DEFAULT_OMV_HOME
+
+
+get_vibe_home = get_omv_home
 
 
 def is_dangerous_directory(path: Path | str = ".") -> tuple[bool, str]:

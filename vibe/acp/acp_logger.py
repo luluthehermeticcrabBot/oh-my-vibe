@@ -5,16 +5,17 @@ import json
 import logging
 from logging.handlers import RotatingFileHandler
 import os
-from pathlib import Path
 import re
 from typing import TYPE_CHECKING
 
 from cachetools import TTLCache
 
+from vibe.utils.paths import get_omv_home
+
 if TYPE_CHECKING:
     from acp.connection import StreamEvent
 
-ACP_LOG_DIR = Path.home() / ".vibe" / "logs" / "acp"
+ACP_LOG_DIR = get_omv_home() / "logs" / "acp"
 ACP_LOG_FILE = ACP_LOG_DIR / "messages.jsonl"
 MAX_LOG_SIZE_BYTES = 1_000_000
 BACKUP_COUNT = 3

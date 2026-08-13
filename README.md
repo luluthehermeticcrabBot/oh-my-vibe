@@ -1,9 +1,11 @@
-# Mistral Vibe
+# Oh My Vibe
 
-[![PyPI Version](https://img.shields.io/pypi/v/mistral-vibe)](https://pypi.org/project/mistral-vibe)
+> Oh My Vibe is a fork of [Mistral Vibe](https://github.com/mistralai/mistral-vibe) and is not affiliated with, endorsed by, or sponsored by Mistral AI. Mistral AI trademarks and logos belong to their respective owners.
+
+[![PyPI Version](https://img.shields.io/pypi/v/oh-my-vibe)](https://pypi.org/project/oh-my-vibe)
 [![Python Version](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org/downloads/release/python-3120/)
-[![CI Status](https://github.com/mistralai/mistral-vibe/actions/workflows/ci.yml/badge.svg)](https://github.com/mistralai/mistral-vibe/actions/workflows/ci.yml)
-[![License](https://img.shields.io/github/license/mistralai/mistral-vibe)](https://github.com/mistralai/mistral-vibe/blob/main/LICENSE)
+[![CI Status](https://github.com/luluthehermeticcrabBot/oh-my-vibe/actions/workflows/ci.yml/badge.svg)](https://github.com/luluthehermeticcrabBot/oh-my-vibe/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/luluthehermeticcrabBot/oh-my-vibe)](https://github.com/luluthehermeticcrabBot/oh-my-vibe/blob/main/LICENSE)
 
 ```
 ██████████████████░░
@@ -17,9 +19,9 @@
 ██████████████████░░
 ```
 
-**Mistral's open-source CLI coding assistant.**
+**An independent open-source CLI coding assistant.**
 
-Mistral Vibe is a command-line coding assistant powered by Mistral's models. It provides a conversational interface to your codebase, allowing you to use natural language to explore, modify, and interact with your projects through a powerful set of tools.
+Oh My Vibe is a command-line coding assistant. It provides a conversational interface to your codebase, allowing you to use natural language to explore, modify, and interact with your projects through a powerful set of tools.
 
 > [!WARNING]
 > Mistral Vibe works on Windows, but we officially support and target UNIX environments.
@@ -83,8 +85,9 @@ pip install oh-my-vibe
   - [MCP Server Configuration](#mcp-server-configuration)
   - [Session Management](#session-management)
   - [Update Settings](#update-settings)
-  - [Custom Vibe Home Directory](#custom-vibe-home-directory)
+  - [Custom Oh My Vibe Home Directory](#custom-oh-my-vibe-home-directory)
 - [Editors/IDEs](#editorsides)
+- [Migration from upstream Vibe](docs/migration-from-vibe.md)
 - [Resources](#resources)
 - [Data collection & usage](#data-collection--usage)
 - [License](#license)
@@ -131,7 +134,7 @@ Vibe comes with several built-in agent profiles, each designed for different use
 Use the `--agent` flag to select a different agent:
 
 ```bash
-vibe --agent plan
+omv --agent plan
 ```
 
 To change the default agent used when `--agent` is not passed, set
@@ -206,19 +209,19 @@ Most modern terminals should work, but older or minimal terminal emulators may h
    cd /path/to/your/project
    ```
 
-2. Run Vibe:
+2. Run Oh My Vibe:
 
    ```bash
-   vibe
+   omv
    ```
 
-3. If this is your first time running Vibe, it will:
+3. If this is your first time running Oh My Vibe, it will:
    - Use built-in defaults without creating a configuration file until you
      save a setting
    - Prompt you to enter your API key if it's not already configured
-   - Save your API key to `~/.vibe/.env` for future use
+   - Save your API key to `~/.omv/.env` for future use
 
-   Alternatively, you can configure your API key separately using `vibe --setup`.
+   Alternatively, you can configure your API key separately using `omv --setup`.
 
 4. Start interacting with the agent!
 
@@ -238,7 +241,7 @@ Most modern terminals should work, but older or minimal terminal emulators may h
 
 ### Interactive Mode
 
-Simply run `vibe` to enter the interactive chat loop.
+Simply run `omv` to enter the interactive chat loop.
 
 - **Multi-line Input**: Press `Ctrl+J` or `Shift+Enter` for select terminals to insert a newline.
 - **File Paths**: Reference files in your prompt using the `@` symbol for smart autocompletion (e.g., `> Read the file @src/agent.py`).
@@ -263,9 +266,9 @@ vibe "Refactor the main function in cli/main.py to be more modular."
 
 ### Trust Folder System
 
-Vibe includes a trust folder system to ensure you only run the agent in directories you trust. When you first run Vibe in a new directory which contains a `.vibe` subfolder, it may ask you to confirm whether you trust the folder.
+`omv` includes a trust folder system to ensure you only run the agent in directories you trust. When you first run Vibe in a new directory which contains a `.vibe` subfolder, it may ask you to confirm whether you trust the folder.
 
-Trusted folders are remembered for future sessions. You can manage trusted folders through its configuration file `~/.vibe/trusted_folders.toml`.
+Trusted folders are remembered for future sessions. You can manage trusted folders through its configuration file `~/.omv/trusted_folders.toml`.
 
 This safety feature helps prevent accidental execution in sensitive directories.
 
@@ -856,10 +859,10 @@ Each path is implicitly trusted (no trust prompt) and contributes its `AGENTS.md
 Use `--worktree NAME` to create (or reuse) a [git worktree](https://git-scm.com/docs/git-worktree) and run inside it:
 
 ```bash
-vibe --worktree my-feature
+omv --worktree my-feature
 ```
 
-The worktree lives under `$VIBE_HOME/worktrees/<repo-name>-<repo-hash>/NAME` and is checked out on a branch named `NAME` (created if it doesn't exist, attached if it does). Vibe `cd`s into it before the session starts and trusts it for the session (no trust prompt). If you start Vibe from a subdirectory, Vibe enters the matching subdirectory inside the worktree.
+The worktree lives under `$OMV_HOME/worktrees/<repo-name>-<repo-hash>/NAME` and is checked out on a branch named `NAME` (created if it doesn't exist, attached if it does). Oh My Vibe `cd`s into it before the session starts and trusts it for the session (no trust prompt). If you start Oh My Vibe from a subdirectory, it enters the matching subdirectory inside the worktree.
 
 Existing worktrees are reused only when they belong to the same git repository and are checked out on branch `NAME`; otherwise Vibe exits with an error instead of running in the wrong checkout.
 
@@ -869,9 +872,9 @@ Sessions are scoped per directory, so `-c`/`--continue` and the `--resume` picke
 
 ### Update Settings
 
-Vibe checks PyPI at most once per day during a session. When a newer version is found, the next launch shows an update prompt before opening the chat, offering to either update immediately (via `uv tool upgrade mistral-vibe` or `brew upgrade mistral-vibe`) or continue with the current version.
+Oh My Vibe checks PyPI at most once per day during a session. When a newer version is found, the next launch shows an update prompt before opening the chat, offering to either update immediately (via `uv tool upgrade oh-my-vibe` or `brew upgrade oh-my-vibe`) or continue with the current version.
 
-Run `vibe --check-upgrade` to check PyPI immediately, prompt to install a newer version if one exists, and exit.
+Run `omv --check-upgrade` to check PyPI immediately, prompt to install a newer version if one exists, and exit.
 
 To disable the daily check entirely, add this to your `config.toml`:
 
@@ -889,7 +892,7 @@ To disable notifications:
 enable_notifications = false
 ```
 
-### Custom Vibe Home Directory
+### Custom Oh My Vibe Home Directory
 
 By default, Oh My Vibe stores its configuration in `~/.omv/`. You can override this by setting the `OMV_HOME` environment variable:
 
@@ -897,7 +900,7 @@ By default, Oh My Vibe stores its configuration in `~/.omv/`. You can override t
 export OMV_HOME="/path/to/custom/omv/home"
 ```
 
-This affects where Vibe looks for:
+This affects where Oh My Vibe looks for:
 
 - `config.toml` - Main configuration
 - `.env` - API keys
@@ -909,7 +912,7 @@ This affects where Vibe looks for:
 
 ## Editors/IDEs
 
-Mistral Vibe can be used in text editors and IDEs that support [Agent Client Protocol](https://agentclientprotocol.com/overview/clients). See the [ACP Setup documentation](docs/acp-setup.md) for setup instructions for various editors and IDEs.
+Oh My Vibe can be used in text editors and IDEs that support [Agent Client Protocol](https://agentclientprotocol.com/overview/clients). See the [ACP Setup documentation](docs/acp-setup.md) for setup instructions for various editors and IDEs.
 
 ## Resources
 

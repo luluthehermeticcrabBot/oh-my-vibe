@@ -4299,7 +4299,7 @@ class VibeApp(App):  # noqa: PLR0904
             return
         with self.suspend():
             rprint(
-                "Mistral Vibe has been suspended. Run [bold cyan]fg[/bold cyan] to bring Mistral Vibe back."
+                "Oh My Vibe has been suspended. Run [bold cyan]fg[/bold cyan] to bring Oh My Vibe back."
             )
             os.kill(os.getpid(), signal.SIGTSTP)
 
@@ -4399,7 +4399,7 @@ def run_textual_ui(
                 is_resuming_session=opened.resumed,
                 prompt_for_workspace_trust=False,
             )
-        update_notifier = PyPIUpdateGateway(project_name="mistral-vibe")
+        update_notifier = PyPIUpdateGateway(project_name="oh-my-vibe")
         vscode_extension_promo_repository = FileSystemVscodeExtensionPromoRepository()
         vscode_extension_promo = VscodeExtensionPromo(
             repository=vscode_extension_promo_repository,

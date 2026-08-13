@@ -82,8 +82,8 @@ def load_config_orchestrator_or_exit(
     except MissingAPIKeyError as e:
         if not interactive:
             print(
-                f"Error: {e}. Set the environment variable (e.g. in ~/.vibe/.env "
-                "or your shell), or run `vibe --setup` once interactively.",
+                f"Error: {e}. Set the environment variable (e.g. in ~/.omv/.env "
+                "or your shell), or run `omv --setup` once interactively.",
                 file=sys.stderr,
             )
             sys.exit(1)
@@ -306,7 +306,7 @@ def _show_update_prompt(
             rprint(
                 "[yellow]Vibe could not update automatically.[/]\n"
                 "  Update manually with your package manager (for example "
-                "[bold]uv tool upgrade mistral-vibe[/]), or keep using "
+                "[bold]uv tool upgrade oh-my-vibe[/]), or keep using "
                 f"the current version ({__version__}) for now."
             )
             sys.exit(1)
@@ -348,7 +348,7 @@ def _run_check_upgrade(
 ) -> None:
     from vibe.setup.update_prompt import UpdatePromptMode
 
-    notifier = update_notifier or PyPIUpdateGateway(project_name="mistral-vibe")
+    notifier = update_notifier or PyPIUpdateGateway(project_name="oh-my-vibe")
     try:
         update = asyncio.run(
             get_update_if_available(
