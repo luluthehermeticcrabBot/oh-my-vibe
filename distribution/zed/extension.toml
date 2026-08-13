@@ -4,28 +4,28 @@ description = "An independent downstream coding assistant"
 version = "2.24.0"
 schema_version = 1
 authors = ["Oh My Vibe contributors"]
-repository = "https://github.com/luluthehermeticcrabBot/oh-my-vibe"
+repository = "https://github.com/luluthehungrycat/oh-my-vibe"
 
 [agent_servers.omv]
 name = "Oh My Vibe"
 icon = "./icons/oh_my_vibe.svg"
 
 [agent_servers.omv.targets.darwin-aarch64]
-archive = "https://github.com/luluthehermeticcrabBot/oh-my-vibe/releases/download/v2.24.0/omv-acp-darwin-aarch64-2.24.0.tar.gz"
+archive = "https://github.com/luluthehungrycat/oh-my-vibe/releases/download/v2.24.0/omv-acp-darwin-aarch64-2.24.0.tar.gz"
 cmd = "./omv-acp"
 
 [agent_servers.omv.targets.darwin-x86_64]
-archive = "https://github.com/luluthehermeticcrabBot/oh-my-vibe/releases/download/v2.24.0/omv-acp-darwin-x86_64-2.24.0.tar.gz"
+archive = "https://github.com/luluthehungrycat/oh-my-vibe/releases/download/v2.24.0/omv-acp-darwin-x86_64-2.24.0.tar.gz"
 cmd = "./omv-acp"
 
 [agent_servers.omv.targets.linux-aarch64]
-archive = "https://github.com/luluthehermeticcrabBot/oh-my-vibe/releases/download/v2.24.0/omv-acp-linux-aarch64-2.24.0.tar.gz"
+archive = "https://github.com/luluthehungrycat/oh-my-vibe/releases/download/v2.24.0/omv-acp-linux-aarch64-2.24.0.tar.gz"
 cmd = "./omv-acp"
 
 [agent_servers.omv.targets.linux-x86_64]
-archive = "https://github.com/luluthehermeticcrabBot/oh-my-vibe/releases/download/v2.24.0/omv-acp-linux-x86_64-2.24.0.tar.gz"
+archive = "https://github.com/luluthehungrycat/oh-my-vibe/releases/download/v2.24.0/omv-acp-linux-x86_64-2.24.0.tar.gz"
 cmd = "./omv-acp"
 
 [agent_servers.omv.targets.windows-x86_64]
-archive = "https://github.com/luluthehermeticcrabBot/oh-my-vibe/releases/download/v2.24.0/omv-acp-windows-x86_64-2.24.0.zip"
+archive = "https://github.com/luluthehungrycat/oh-my-vibe/releases/download/v2.24.0/omv-acp-windows-x86_64-2.24.0.zip"
 cmd = "./omv-acp.exe"

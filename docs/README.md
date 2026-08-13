@@ -1,6 +1,6 @@
 # Oh My Vibe Documentation
 
-Welcome to the Oh My Vibe documentation! For basic setup, see the [main README](https://github.com/luluthehermeticcrabBot/oh-my-vibe#readme).
+Welcome to the Oh My Vibe documentation! For basic setup, see the [main README](https://github.com/luluthehungrycat/oh-my-vibe#readme).
 
 ## Available Documentation
 

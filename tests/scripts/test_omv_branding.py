@@ -25,7 +25,7 @@ def test_repository_passes_branding_invariants() -> None:
 def test_checker_rejects_upstream_package_name(tmp_path: Path) -> None:
     (tmp_path / "pyproject.toml").write_text(
         '[project]\nname = "mistral-vibe"\n'
-        'urls = { Repository = "https://github.com/luluthehermeticcrabBot/oh-my-vibe" }\n'
+        'urls = { Repository = "https://github.com/luluthehungrycat/oh-my-vibe" }\n'
         "[project.scripts]\n"
         'omv = "vibe.cli.entrypoint:main"\n'
         'omv-acp = "vibe.acp.entrypoint:main"\n'
@@ -44,7 +44,7 @@ def test_checker_rejects_upstream_package_name(tmp_path: Path) -> None:
 def test_checker_rejects_vibe_home_override(tmp_path: Path) -> None:
     (tmp_path / "pyproject.toml").write_text(
         '[project]\nname = "oh-my-vibe"\n'
-        'urls = { Repository = "https://github.com/luluthehermeticcrabBot/oh-my-vibe" }\n'
+        'urls = { Repository = "https://github.com/luluthehungrycat/oh-my-vibe" }\n'
         "[project.scripts]\n"
         'omv = "vibe.cli.entrypoint:main"\n'
         'omv-acp = "vibe.acp.entrypoint:main"\n'

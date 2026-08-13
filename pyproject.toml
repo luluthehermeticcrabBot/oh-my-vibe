@@ -127,10 +127,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/luluthehermeticcrabBot/oh-my-vibe"
-Repository = "https://github.com/luluthehermeticcrabBot/oh-my-vibe"
-Issues = "https://github.com/luluthehermeticcrabBot/oh-my-vibe/issues"
-Documentation = "https://github.com/luluthehermeticcrabBot/oh-my-vibe#readme"
+Homepage = "https://github.com/luluthehungrycat/oh-my-vibe"
+Repository = "https://github.com/luluthehungrycat/oh-my-vibe"
+Issues = "https://github.com/luluthehungrycat/oh-my-vibe/issues"
+Documentation = "https://github.com/luluthehungrycat/oh-my-vibe#readme"
 
 [build-system]
 requires = ["hatchling==1.31.0", "hatch-vcs==0.5.0", "editables==0.6"]

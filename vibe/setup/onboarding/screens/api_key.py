@@ -20,7 +20,9 @@ from vibe.setup.onboarding.base import OnboardingScreen
 
 MISTRAL_PROVIDER_NAME = "mistral"
 MISTRAL_PROVIDER_HELP_NAME = "Oh My Vibe"
-CONFIG_DOCS_URL = "https://github.com/luluthehermeticcrabBot/oh-my-vibe?tab=readme-ov-file#configuration"
+CONFIG_DOCS_URL = (
+    "https://github.com/luluthehungrycat/oh-my-vibe?tab=readme-ov-file#configuration"
+)
 
 
 class ApiKeyScreen(OnboardingScreen):
