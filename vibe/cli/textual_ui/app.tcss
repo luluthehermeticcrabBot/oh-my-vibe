@@ -1486,7 +1486,7 @@ NarratorStatus {
 .le-lynx-art {
     color: $foreground;
     width: 12;
-    height: 3;
+    height: 5;
 }
 
 .whats-new-message {
