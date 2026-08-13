@@ -46,3 +46,16 @@ def test_rejects_destination_inside_source(tmp_path: Path) -> None:
     result = run("--source", str(source), "--destination", str(source / "copy"))
     assert result.returncode == 1
     assert "inside source" in result.stderr
+
+
+def test_rejects_existing_destination_conflicts(tmp_path: Path) -> None:
+    source = tmp_path / ".vibe"
+    destination = tmp_path / ".omv"
+    source.mkdir()
+    destination.mkdir()
+    (source / "config.toml").write_text("new\n", encoding="utf-8")
+    (destination / "config.toml").write_text("existing\n", encoding="utf-8")
+    result = run("--source", str(source), "--destination", str(destination), "--apply")
+    assert result.returncode == 1
+    assert "would be overwritten" in result.stderr
+    assert (destination / "config.toml").read_text(encoding="utf-8") == "existing\n"

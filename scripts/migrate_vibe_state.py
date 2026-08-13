@@ -38,6 +38,15 @@ def main() -> int:
         return 1
 
     files = [path.relative_to(source) for path in source.rglob("*") if path.is_file()]
+    conflicts = [relative for relative in files if (destination / relative).exists()]
+    if conflicts:
+        print(
+            "ERROR: destination already contains files that would be overwritten:\n"
+            + "\n".join(f"  - {relative}" for relative in conflicts)
+            + "\nChoose an empty destination or remove the conflicting files first.",
+            file=sys.stderr,
+        )
+        return 1
     print(f"Source:      {source}")
     print(f"Destination: {destination}")
     print(f"Files:       {len(files)}")
