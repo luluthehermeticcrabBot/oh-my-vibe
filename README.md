@@ -4,8 +4,8 @@
 
 [![PyPI Version](https://img.shields.io/pypi/v/oh-my-vibe)](https://pypi.org/project/oh-my-vibe)
 [![Python Version](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org/downloads/release/python-3120/)
-[![CI Status](https://github.com/luluthehermeticcrabBot/oh-my-vibe/actions/workflows/ci.yml/badge.svg)](https://github.com/luluthehermeticcrabBot/oh-my-vibe/actions/workflows/ci.yml)
-[![License](https://img.shields.io/github/license/luluthehermeticcrabBot/oh-my-vibe)](https://github.com/luluthehermeticcrabBot/oh-my-vibe/blob/main/LICENSE)
+[![CI Status](https://github.com/luluthehungrycat/oh-my-vibe/actions/workflows/ci.yml/badge.svg)](https://github.com/luluthehungrycat/oh-my-vibe/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/luluthehungrycat/oh-my-vibe)](https://github.com/luluthehungrycat/oh-my-vibe/blob/main/LICENSE)
 
 ```
 ██████████████████░░
@@ -31,7 +31,7 @@ Oh My Vibe is a command-line coding assistant. It provides a conversational inte
 **Linux and macOS**
 
 ```bash
-curl -LsSf https://raw.githubusercontent.com/luluthehermeticcrabBot/oh-my-vibe/main/scripts/install.sh | bash
+curl -LsSf https://raw.githubusercontent.com/luluthehungrycat/oh-my-vibe/main/scripts/install.sh | bash
 ```
 
 **Windows**

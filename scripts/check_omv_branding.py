@@ -34,7 +34,7 @@ def check_repository(root: Path) -> list[str]:
         )
 
     urls = project.get("urls", {})
-    repository_url = "https://github.com/luluthehermeticcrabBot/oh-my-vibe"
+    repository_url = "https://github.com/luluthehungrycat/oh-my-vibe"
     if urls.get("Repository") != repository_url:
         errors.append("project.urls.Repository must point to the Oh My Vibe repository")
 
