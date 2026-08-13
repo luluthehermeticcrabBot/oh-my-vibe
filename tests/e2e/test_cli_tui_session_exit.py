@@ -74,7 +74,7 @@ def _saved_session_has_usage(
 def _wait_for_saved_session_usage(
     expected_prompt_tokens: int, expected_completion_tokens: int
 ) -> None:
-    vibe_home = Path(os.environ["VIBE_HOME"])
+    vibe_home = Path(os.environ["OMV_HOME"])
     poll_until(
         lambda: _saved_session_has_usage(
             vibe_home, expected_prompt_tokens, expected_completion_tokens

@@ -94,7 +94,7 @@ def test_write_file_approval_creates_file_and_rejection_leaves_file_absent(
     spawned_vibe_process: SpawnedVibeProcessFixture,
 ) -> None:
     set_tool_denylist(
-        Path(os.environ["VIBE_HOME"]),
+        Path(os.environ["OMV_HOME"]),
         "write_file",
         [str((e2e_workdir / REJECTED_FILE).resolve())],
     )

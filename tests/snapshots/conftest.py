@@ -4,6 +4,8 @@ import time
 
 import pytest
 
+from vibe.core.config.admin_config import ManagedConfigResult
+
 
 @pytest.fixture(autouse=True)
 def _pin_timezone(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -38,4 +40,16 @@ def _pin_spinner_frames(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         "vibe.cli.textual_ui.widgets.spinner_text.SpinnerText._advance",
         lambda self: None,
+    )
+
+
+@pytest.fixture(autouse=True)
+def _disable_managed_config_fetch(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep snapshots hermetic and independent of the live admin endpoint."""
+
+    async def no_managed_config(*args: object, **kwargs: object) -> ManagedConfigResult:
+        return ManagedConfigResult()
+
+    monkeypatch.setattr(
+        "vibe.app_server._resources.fetch_managed_config", no_managed_config
     )

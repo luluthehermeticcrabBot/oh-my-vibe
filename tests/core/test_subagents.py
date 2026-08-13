@@ -26,7 +26,10 @@ def test_subagent_run_accumulates_response_and_tool_progress() -> None:
 
     assert progress is not None
     assert progress.tool_call_id == "task-1"
-    assert progress.message == "bash: Ran pwd"
+    assert (
+        progress.message
+        == "bash: Ran pwd (policy=deterministic, evaluator=core, sandbox=no)"
+    )
     assert accumulator.build_result(turns_used=1) == TaskResult(
         response="Found the issue", turns_used=1, completed=True
     )

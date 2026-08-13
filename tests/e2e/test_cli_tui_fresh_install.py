@@ -31,7 +31,7 @@ def _build_wheel(dist_dir: Path) -> Path:
         cwd=TESTS_ROOT.parent,
         check=True,
     )
-    wheels = sorted(dist_dir.glob("mistral_vibe-*.whl"))
+    wheels = sorted(dist_dir.glob("oh_my_vibe-*.whl"))
     assert len(wheels) == 1
     return wheels[0]
 
@@ -59,7 +59,7 @@ def _install_fresh_wheel(tmp_path: Path, wheel_path: Path) -> Path:
         cwd=tmp_path,
         check=True,
     )
-    return _venv_executable(venv_path, "vibe")
+    return _venv_executable(venv_path, "omv")
 
 
 @pytest.mark.timeout(90)
@@ -106,5 +106,5 @@ def test_fresh_wheel_install_can_spawn_cli_and_complete_happy_path(
             child.close()
 
     output = captured.getvalue()
-    assert "Welcome to Mistral Vibe" not in output
+    assert "Welcome to Oh My Vibe" not in output
     assert streaming_mock_server.requests[-1].get("model") == "mock-model"
