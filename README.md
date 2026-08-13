@@ -7,17 +7,7 @@
 [![CI Status](https://github.com/luluthehungrycat/oh-my-vibe/actions/workflows/ci.yml/badge.svg)](https://github.com/luluthehungrycat/oh-my-vibe/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/luluthehungrycat/oh-my-vibe)](https://github.com/luluthehungrycat/oh-my-vibe/blob/main/LICENSE)
 
-```
-██████████████████░░
-██████████████████░░
-████  ██████  ████░░
-████    ██    ████░░
-████          ████░░
-████  ██  ██  ████░░
-██      ██      ██░░
-██████████████████░░
-██████████████████░░
-```
+> **Upstream attribution:** Oh My Vibe is based on software originally distributed as [Mistral Vibe](https://github.com/mistralai/mistral-vibe). It is an independent project and is not affiliated with, endorsed by, or sponsored by Mistral AI. Mistral AI names, trademarks, and logos belong to their respective owners.
 
 **An independent open-source CLI coding assistant.**
 
