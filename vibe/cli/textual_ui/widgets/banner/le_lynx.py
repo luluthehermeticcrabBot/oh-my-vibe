@@ -72,7 +72,7 @@ class LeLynx(Static):
         classes = kwargs.pop("classes", None)
         merged_classes = "le-lynx" if classes is None else f"le-lynx {classes}"
         super().__init__(**kwargs, classes=merged_classes)
-        self._animate = animate
+        self._animate_enabled = animate
         self._frame_index = 0
         self._timer: Timer | None = None
         self._freeze_requested = False
@@ -82,7 +82,7 @@ class LeLynx(Static):
 
     def on_mount(self) -> None:
         self._inner = self.query_one(".le-lynx-art", Static)
-        if self._animate:
+        if self._animate_enabled:
             self._timer = self.set_interval(FRAME_INTERVAL_S, self._next_frame)
 
     def freeze_animation(self) -> None:
