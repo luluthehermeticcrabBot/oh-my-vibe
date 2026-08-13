@@ -69,7 +69,7 @@ def spawned_vibe_process() -> SpawnedVibeFactory:
         env["VIBE_TEST_DISABLE_KEYRING"] = "1"
         child = pexpect.spawn(
             "uv",
-            ["run", "vibe", "--workdir", str(workdir), *(extra_args or [])],
+            ["run", "omv", "--workdir", str(workdir), *(extra_args or [])],
             cwd=str(TESTS_ROOT.parent),
             env=cast("os._Environ[str]", env),
             encoding="utf-8",
