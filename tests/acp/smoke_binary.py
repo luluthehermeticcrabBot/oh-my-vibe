@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Smoke tests for the built vibe-acp binary.
+"""Smoke tests for the built omv-acp binary.
 
 Usage: python tests/smoke_binary.py <binary-dir>
 
@@ -109,7 +109,7 @@ def test_version(binary: Path) -> None:
 
 async def test_acp_initialize(binary: Path) -> None:
     with tempfile.TemporaryDirectory() as tmp:
-        vibe_home = Path(tmp) / ".vibe"
+        vibe_home = Path(tmp) / ".omv"
         env = os.environ.copy()
         env["OMV_HOME"] = str(vibe_home)
         env["MISTRAL_API_KEY"] = "smoke-test-mock-key"
@@ -144,7 +144,7 @@ async def test_acp_initialize(binary: Path) -> None:
                 )
             if resp.agent_info is None:
                 _fail("agent_info is None")
-            if resp.agent_info.name != "@mistralai/mistral-vibe":
+            if resp.agent_info.name != "@oh-my-vibe/omv":
                 _fail(f"unexpected agent name: {resp.agent_info.name}")
 
             print(
@@ -242,7 +242,7 @@ def test_no_executable_stack(binary_dir: Path) -> None:
     checked = 0
 
     # Check main binary + everything under _internal/
-    candidates = [binary_dir / "vibe-acp"]
+    candidates = [binary_dir / "omv-acp"]
     candidates.extend(internal_dir.rglob("*"))
 
     for filepath in candidates:
@@ -277,7 +277,7 @@ def main() -> None:
         sys.exit(1)
 
     binary_dir = Path(sys.argv[1])
-    binary_name = "vibe-acp.exe" if platform.system() == "Windows" else "vibe-acp"
+    binary_name = "omv-acp.exe" if platform.system() == "Windows" else "omv-acp"
     binary = binary_dir / binary_name
 
     if not binary.exists():
