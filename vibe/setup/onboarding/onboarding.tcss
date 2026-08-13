@@ -1,7 +1,7 @@
 /* Onboarding App Styles */
 
-$mistral_orange: #FF8205;
-$mistral_orange_title: #ff5a00;
+$omv_accent: #D97706;
+$omv_accent_title: #92400E;
 $browser_sign_in_card_border: #303040;
 
 Screen,
@@ -149,7 +149,7 @@ ThemeSelectionScreen #enter-hint {
     margin-bottom: 0;
 }
 
-.onboarding-chat .petit-chat {
+.onboarding-chat .le-lynx-art {
     width: auto;
     color: $text;
 }
@@ -163,7 +163,7 @@ ThemeSelectionScreen #enter-hint {
 
 #auth-method-title,
 #sign-in-target-title {
-    color: $mistral_orange_title;
+    color: $omv_accent_title;
 }
 
 #auth-method-subtitle,
@@ -203,7 +203,7 @@ ThemeSelectionScreen #enter-hint {
 }
 
 .auth-method-option-marker.selected {
-    color: $mistral_orange;
+    color: $omv_accent;
 }
 
 .onboarding-card {
@@ -222,7 +222,7 @@ ThemeSelectionScreen #enter-hint {
 
 .auth-method-option.selected {
     border: solid $browser_sign_in_card_border;
-    border-left: solid $mistral_orange;
+    border-left: solid $omv_accent;
     color: $text;
 }
 
@@ -266,7 +266,7 @@ ThemeSelectionScreen #enter-hint {
     height: 3;
     margin-top: 0;
     content-align: center middle;
-    color: $mistral_orange;
+    color: $omv_accent;
 }
 
 .browser-sign-in-step-marker.idle,
@@ -319,7 +319,7 @@ ThemeSelectionScreen #enter-hint {
 }
 
 .browser-sign-in-step-detail.pending {
-    color: $mistral_orange;
+    color: $omv_accent;
     text-style: bold;
 }
 
@@ -365,7 +365,7 @@ ThemeSelectionScreen #enter-hint {
 }
 
 #api-key-title {
-    color: $mistral_orange_title;
+    color: $omv_accent_title;
 }
 
 #api-key-panel {
@@ -483,7 +483,7 @@ ThemeSelectionScreen #enter-hint {
 }
 
 #custom-domain-title {
-    color: $mistral_orange_title;
+    color: $omv_accent_title;
 }
 
 #custom-domain-subtitle {

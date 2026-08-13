@@ -11,7 +11,7 @@ from textual.widgets import Input, Link
 
 from vibe.cli.clipboard import copy_selection_to_clipboard
 from vibe.cli.textual_ui.shortcut_hints import shortcut, shortcut_hint
-from vibe.cli.textual_ui.widgets.banner.petit_chat import PetitChat
+from vibe.cli.textual_ui.widgets.banner.le_lynx import LeLynx
 from vibe.cli.textual_ui.widgets.no_markup_static import NoMarkupStatic
 from vibe.core.config import DEFAULT_VIBE_BASE_URL, ProviderConfig
 from vibe.core.telemetry.types import LaunchContext
@@ -79,7 +79,7 @@ class ApiKeyScreen(OnboardingScreen):
         with Vertical(id="api-key-outer", classes="onboarding-content"):
             with Center():
                 with Vertical(id="api-key-panel", classes="onboarding-panel"):
-                    yield PetitChat(id="api-key-chat", classes="onboarding-chat")
+                    yield LeLynx(id="api-key-chat", classes="onboarding-chat")
                     yield NoMarkupStatic(
                         f"Get your {provider_name} API key",
                         id="api-key-title",

@@ -169,15 +169,8 @@ function update_omv() {
 
 function main() {
     echo
-    echo "██████████████████░░"
-    echo "██████████████████░░"
-    echo "████  ██████  ████░░"
-    echo "████    ██    ████░░"
-    echo "████          ████░░"
-    echo "████  ██  ██  ████░░"
-    echo "██      ██      ██░░"
-    echo "██████████████████░░"
-    echo "██████████████████░░"
+    echo "Oh My Vibe"
+    echo "───────────"
     echo
     echo "Starting Oh My Vibe installation..."
     echo

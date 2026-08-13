@@ -72,7 +72,7 @@ Screen {
     align: center middle;
 }
 
-.petit-chat {
+.le-lynx-art {
     color: $foreground;
     width: 12;
 }
