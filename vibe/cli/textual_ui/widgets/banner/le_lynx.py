@@ -8,61 +8,77 @@ from textual.widgets import Static
 
 from vibe.cli.textual_ui.widgets.braille_renderer import render_braille
 
-# Original Oh My Vibe lynx artwork. Coordinates are braille dots, not copied
-# from the former upstream cat animation.
-WIDTH = 22
-HEIGHT = 12
+# Original Oh My Vibe lynx artwork. The silhouette deliberately emphasizes
+# the species cues that survive at terminal size: tall ear tufts, cheek ruffs,
+# a broad face, eyes, nose, and a tapered muzzle.
+WIDTH = 24
+HEIGHT = 20
 FRAME_INTERVAL_S = 0.24
 
-_BASE = {
-    1j + 6,
-    1j + 7,
-    1j + 14,
-    1j + 15,
-    2j + 5,
-    2j + 8,
-    2j + 13,
-    2j + 16,
-    3j + 4,
-    3j + 9,
-    3j + 12,
-    3j + 17,
-    4j + 4,
-    4j + 8,
-    4j + 13,
-    4j + 17,
-    5j + 5,
-    5j + 6,
-    5j + 7,
-    5j + 14,
-    5j + 15,
-    5j + 16,
-    6j + 6,
-    6j + 15,
-    7j + 7,
-    7j + 8,
-    7j + 13,
-    7j + 14,
-    8j + 8,
-    8j + 13,
-    9j + 9,
-    9j + 10,
-    9j + 11,
-    9j + 12,
-}
-
-_EARS_HIGH = {0j + 5, 0j + 8, 0j + 13, 0j + 16}
-_EARS_LOW = {1j + 5, 1j + 8, 1j + 13, 1j + 16}
-_EYES_OPEN = {4j + 6, 4j + 15}
-_EYES_CLOSED = {4j + 7, 4j + 14}
-
-# A short, deliberately distinct motion: ear twitch, blink, then return.
-_FRAMES = (
-    _BASE | _EARS_HIGH | _EYES_OPEN,
-    _BASE | _EARS_LOW | _EYES_OPEN,
-    _BASE | _EARS_HIGH | _EYES_CLOSED,
-    _BASE | _EARS_HIGH | _EYES_OPEN,
+# Dot-grid artwork: two columns of dots per braille cell and four rows per cell.
+# Keeping the source as a readable silhouette makes future mascot edits safer.
+_BASE_ART = (
+    "     ##        ##     ",
+    "    ####      ####    ",
+    "    ####      ####    ",
+    "   ##  ##    ##  ##   ",
+    "   ##  ##    ##  ##   ",
+    "  ##################  ",
+    " #################### ",
+    "######################",
+    "###  ####    ####  ###",
+    "##   ####    ####   ##",
+    "##     ##    ##     ##",
+    "##                  ##",
+    "###      ####      ###",
+    " ####    ####    #### ",
+    "  ####  ######  ####  ",
+    "   ##################   ",
+    "     ####    ####     ",
+    "      ###    ###      ",
+    "       ##    ##       ",
+    "        ##  ##        ",
 )
+
+
+def _dots(rows: tuple[str, ...]) -> frozenset[complex]:
+    return frozenset(
+        complex(x, y)
+        for y, row in enumerate(rows)
+        for x, char in enumerate(row)
+        if char == "#"
+    )
+
+
+_BASE = _dots(_BASE_ART)
+
+# Animation is intentionally restrained: ear tufts twitch, then the eyes blink.
+_EAR_TWITCH = _dots((
+    "      ##      ##      ",
+    "     ####    ####     ",
+    "    ####      ####    ",
+    "   ##  ##    ##  ##   ",
+    "   ##  ##    ##  ##   ",
+    "  ##################  ",
+    " #################### ",
+    "######################",
+    "###  ####    ####  ###",
+    "##   ####    ####   ##",
+    "##     ##    ##     ##",
+    "##                  ##",
+    "###      ####      ###",
+    " ####    ####    #### ",
+    "  ####  ######  ####  ",
+    "   ##################   ",
+    "     ####    ####     ",
+    "      ###    ###      ",
+    "       ##    ##       ",
+    "        ##  ##        ",
+))
+
+_EYES_BLINK = _BASE - {complex(6, 8), complex(15, 8)} | {complex(6, 9), complex(15, 9)}
+
+_FRAMES = (_BASE, _EAR_TWITCH, _EYES_BLINK, _BASE)
 
 
 class LeLynx(Static):
