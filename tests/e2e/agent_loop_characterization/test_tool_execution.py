@@ -86,7 +86,7 @@ def test_denylisted_bash_tool_does_not_run_and_is_reported_to_the_model(
     e2e_workdir: Path,
     spawned_vibe_process: SpawnedVibeProcessFixture,
 ) -> None:
-    set_tool_denylist(Path(os.environ["VIBE_HOME"]), "bash", ["touch"])
+    set_tool_denylist(Path(os.environ["OMV_HOME"]), "bash", ["touch"])
     denied_path = e2e_workdir / DENIED_BASH_FILE
 
     with spawned_vibe_process(e2e_workdir) as (child, captured):

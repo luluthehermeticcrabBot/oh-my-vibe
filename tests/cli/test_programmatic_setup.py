@@ -78,7 +78,7 @@ def test_programmatic_mode_does_not_run_onboarding_on_missing_api_key(
     assert sentinel["called"] is False
     err = capsys.readouterr().err
     assert "MISTRAL_API_KEY" in err
-    assert "vibe --setup" in err
+    assert "omv --setup" in err
 
 
 def test_interactive_mode_still_runs_onboarding_on_missing_api_key(

@@ -619,4 +619,4 @@ def test_help_advertises_mcp_command(
         entrypoint.parse_arguments()
 
     assert exc_info.value.code == 0
-    assert "vibe mcp --help" in capsys.readouterr().out
+    assert "omv mcp --help" in capsys.readouterr().out

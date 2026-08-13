@@ -33,7 +33,7 @@ RESUME_TODO_RESULT_TEXT = "Updated 1 todos"
 
 
 def _load_latest_session_messages() -> tuple[str, list[dict[str, object]]] | None:
-    session_root = Path(os.environ["VIBE_HOME"]) / "logs" / "session"
+    session_root = Path(os.environ["OMV_HOME"]) / "logs" / "session"
     messages_paths = list(session_root.glob("session_*/messages.jsonl"))
     if not messages_paths:
         return None

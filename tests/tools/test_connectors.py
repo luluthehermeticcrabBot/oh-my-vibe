@@ -576,7 +576,7 @@ class TestBootstrapDiscovery:
     async def test_fresh_bootstrap_cache_avoids_http(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         payload = _make_bootstrap_response([
             _make_connector_payload(tools=[_make_tool_payload("cached")])
         ])
@@ -606,7 +606,7 @@ class TestBootstrapDiscovery:
     async def test_stale_bootstrap_cache_falls_back_to_http(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         cached_payload = _make_bootstrap_response([
             _make_connector_payload(tools=[_make_tool_payload("cached")])
         ])
@@ -644,7 +644,7 @@ class TestBootstrapDiscovery:
     async def test_malformed_bootstrap_cache_falls_back_to_http(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         (tmp_path / _BOOTSTRAP_CACHE_FILE_NAME).write_text("{bad toml")
         payload = _make_bootstrap_response([
             _make_connector_payload(tools=[_make_tool_payload("fresh")])
@@ -663,7 +663,7 @@ class TestBootstrapDiscovery:
     async def test_force_refresh_bypasses_fresh_bootstrap_cache(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         cached_payload = _make_bootstrap_response([
             _make_connector_payload(tools=[_make_tool_payload("cached")])
         ])
@@ -699,7 +699,7 @@ class TestBootstrapDiscovery:
     async def test_bootstrap_cache_does_not_store_raw_api_key(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         payload = _make_bootstrap_response([
             _make_connector_payload(tools=[_make_tool_payload("cached")])
         ])
@@ -717,7 +717,7 @@ class TestBootstrapDiscovery:
     async def test_bootstrap_cache_stores_only_consumed_connector_fields(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         payload = _make_bootstrap_response([
             _make_connector_payload(
                 tools=[{**_make_tool_payload("cached"), "secret_extra": "tool-secret"}],
@@ -754,7 +754,7 @@ class TestBootstrapDiscovery:
     async def test_bootstrap_cache_uses_dedicated_file(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         payload = _make_bootstrap_response([
             _make_connector_payload(tools=[_make_tool_payload("cached")])
         ])
@@ -1032,7 +1032,7 @@ class TestAuthActionablediscovery:
     async def test_refresh_updates_bootstrap_file_cache(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path
     ) -> None:
-        monkeypatch.setenv("VIBE_HOME", str(tmp_path))
+        monkeypatch.setenv("OMV_HOME", str(tmp_path))
         payload = _make_bootstrap_response([
             _make_connector_payload(
                 connector_id="c-1",
