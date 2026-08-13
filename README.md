@@ -31,7 +31,7 @@ Oh My Vibe is a command-line coding assistant. It provides a conversational inte
 **Linux and macOS**
 
 ```bash
-curl -LsSf https://raw.githubusercontent.com/luluthehermeticcrabBot/oh-my-vibe/feat/branding-compliance-implementation/scripts/install.sh | bash
+curl -LsSf https://raw.githubusercontent.com/luluthehermeticcrabBot/oh-my-vibe/main/scripts/install.sh | bash
 ```
 
 **Windows**
