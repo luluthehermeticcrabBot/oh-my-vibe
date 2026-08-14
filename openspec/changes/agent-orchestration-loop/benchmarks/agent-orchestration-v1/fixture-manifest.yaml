@@ -29,7 +29,7 @@ required_categories:
 repetitions_per_configuration: 3
 repetition_record:
   required_fields: [fixture_id, configuration, repetition_id, seed, result_path]
-  pairing_key: [fixture_id, repetition_id]
+  pairing_key: [fixture_id, configuration, repetition_id]
   result_schema: benchmark-result-v1
 artifact_root: implementation-task-5.1-must-provide-immutable-root
 result_schema: implementation-task-5.1-must-provide-benchmark-result-v1

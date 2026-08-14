@@ -46,9 +46,10 @@ Compare these configurations on representative Oh My Vibe maintenance tasks:
 
 1. single implementer;
 2. explorer → implementer;
-3. implementer → independent reviewer;
-4. planner → implementer → independent reviewer;
-5. parallel isolated implementations plus deterministic selection.
+3. implementer → independent reviewer.
+
+Planner-only and parallel isolated implementations remain future opt-in
+experiments and are not part of the v1 readiness gate.
 
 Record functional success, regression rate, review precision, wall-clock time, token cost, number of tool calls, and human-rated usefulness. Report median and tail behavior, not only best-of-N results.
 

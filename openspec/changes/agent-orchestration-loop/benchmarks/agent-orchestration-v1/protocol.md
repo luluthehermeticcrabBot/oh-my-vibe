@@ -40,12 +40,18 @@ The fixture identity field set is exactly: `id`, `category`,
 `policy_file_path`, `policy_file_sha256`, `acceptance_command`,
 `acceptance_cwd`, `acceptance_timeout_seconds`, `model_provider_id`, `model_id`,
 `lockfile_sha256`, `runtime_image_id`, and `seed`. Suite-level `artifact_root`,
-`result_schema`, `artifact_root`, and `repetitions` are excluded from the fixture identity.
+`result_schema`, and `repetitions` are excluded from the fixture identity.
 `fixture_fingerprint` is the lowercase SHA-256 of canonical UTF-8 JSON of that
-exact field set: keys are sorted lexicographically, every string is NFC-normalized,
-numbers use JSON shortest decimal form, booleans/null use JSON literals, arrays
-preserve manifest order, separators are `,` and `:`, and no trailing newline is
-hashed. This same canonicalization is used by manifest and result validators.
+exact field set: keys are sorted lexicographically, every string is NFC-normalized
+before serialization, UTF-8 is emitted directly with `ensure_ascii=false`, quotes,
+backslashes, and control scalars U+0000–U+001F use JSON escapes (`\\b`, `\\t`,
+`\\n`, `\\f`, `\\r`, or lowercase `\\u00XX`), `/` is not escaped, numbers use
+finite JSON shortest decimal form (no NaN/Infinity/-0), booleans/null use JSON
+literals, arrays preserve manifest order, separators are `,` and `:`, and no
+trailing newline is hashed. Result fingerprints use this identical serializer
+and explicitly include the same fixture identity plus configuration and
+repetition_id. This same canonicalization is used by manifest and result
+validators.
 
 ## Execution protocol
 
@@ -80,6 +86,16 @@ field except repetition and result fields, with object keys sorted and no
 whitespace. The validator SHALL reject a result whose identity does not match
 the fixture record or whose acceptance command, environment, or artifact digest
 differs from the manifest.
+
+Rating anchors are normative: 1 means the result is incorrect, unsupported, or
+requires a complete operator redo; 3 means partially correct with material
+omissions or operator correction; 5 means correct, evidence-backed, and usable
+without correction. `evidence_quality` uses the same scale for absent,
+partial, and complete reproducible evidence; `operator_effort` is inverted so
+1 means extensive manual recovery and 5 means no manual recovery. Exactly two
+distinct non-empty `rater_id` values are required; missing, duplicate,
+non-integer, or out-of-range ratings invalidate the repetition and exclude it
+from usefulness aggregation.
 
 ## Readiness gates
 
