@@ -52,6 +52,10 @@ The system SHALL capture a `WorkspaceBaseline` containing repository identity, w
 - **WHEN** a confirmed disposition cannot be applied because the workspace diverged
 - **THEN** it transitions to `blocked`, clears its claim atomically, retains the workspace, and requires a new disposition ID with fresh generation/digest validation for retry
 
+#### Scenario: Coordinator crash during disposition
+- **WHEN** the coordinator dies after claiming a disposition and before recording its filesystem result
+- **THEN** startup or lease-expiry reconciliation uses the fenced claim token to determine whether `applied` was durably recorded; otherwise it records `blocked` with `coordinator_lost`, clears the claim atomically, retains the workspace, and permits a new disposition after fresh generation/digest validation
+
 ### Requirement: Run progresses through bounded workflow states
 
 The system SHALL expose the states `planning`, `implementing`, `verifying`, `reviewing`, `fixing`, `completed`, `failed`, `cancelled`, and `blocked`. A run MUST move through valid transitions only and MUST record the reason for terminal or blocked states.

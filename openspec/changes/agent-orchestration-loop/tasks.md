@@ -9,7 +9,7 @@
 
 - [ ] 2.1 Integrate run policies with existing permission, sandbox, and approval resolution so child capabilities cannot exceed the parent policy.
 - [ ] 2.2 Add read-only explorer/reviewer execution and single-writer implementer execution using explicit workspace identities.
-- [ ] 2.3 Add typed workspace-state detection for dirty/staged/untracked/ignored files, active sessions, live runs, and linked worktrees; implement `reject_dirty`, `isolated_worktree`, and `snapshot` policies, the versioned snapshot manifest, expected-state restore/remove preconditions, workspace-generation disposition claim CAS, `workspace_conflict`, allocation/restore failure blocking, cancellation retention, and explicit cleanup confirmation tests.
+- [ ] 2.3 Add typed workspace-state detection for dirty/staged/untracked/ignored files, active sessions, live runs, and linked worktrees; implement `reject_dirty`, `isolated_worktree`, and `snapshot` policies, the versioned snapshot manifest, expected-state restore/remove preconditions, fenced workspace-generation disposition claim CAS with lease-expiry/startup reconciliation, `workspace_conflict`, allocation/restore failure blocking, cancellation retention, and explicit cleanup confirmation tests.
 - [ ] 2.4 Add a canonical server-derived diff and `ScopeManifest` matcher using the specified UTF-8/NFC POSIX path grammar, glob grammar/conformance vectors, bytewise ordering, exclude precedence, explicit rename/delete/add representation, symlink target rules, generated/ignored policy, untracked files, and deterministic `scope_violation` retention behavior.
 
 ## 3. Delivery surfaces and persistence
