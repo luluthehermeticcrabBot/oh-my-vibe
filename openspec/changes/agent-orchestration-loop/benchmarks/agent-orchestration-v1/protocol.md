@@ -32,8 +32,20 @@ Artifact paths SHALL be repository-relative or immutable content-addressed
 URIs; absolute paths and floating branch/tag references are invalid. The
 validator SHALL resolve every path, verify every digest, require exactly three
 repetition records per configuration, and reject duplicate pairing keys. The
-planning manifest is the schema declaration; task 5.1 must populate all fields
+The planning manifest is the schema declaration; task 5.1 must populate all fields
 and all 12 fixture records before execution is permitted.
+
+The fixture identity field set is exactly: `id`, `category`,
+`repository_commit`, `prompt_file_path`, `prompt_file_sha256`,
+`policy_file_path`, `policy_file_sha256`, `acceptance_command`,
+`acceptance_cwd`, `acceptance_timeout_seconds`, `model_provider_id`, `model_id`,
+`lockfile_sha256`, `runtime_image_id`, and `seed`. Suite-level `artifact_root`,
+`result_schema`, and `repetition_ids` are excluded from the fixture identity.
+`fixture_fingerprint` is the lowercase SHA-256 of canonical UTF-8 JSON of that
+exact field set: keys are sorted lexicographically, every string is NFC-normalized,
+numbers use JSON shortest decimal form, booleans/null use JSON literals, arrays
+preserve manifest order, separators are `,` and `:`, and no trailing newline is
+hashed. This same canonicalization is used by manifest and result validators.
 
 ## Execution protocol
 

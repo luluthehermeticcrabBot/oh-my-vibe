@@ -22,8 +22,6 @@ required_fixture_fields:
   - runtime_image_id
   - seed
   - repetition_ids
-  - artifact_root
-  - result_schema
 required_categories:
   bug_fix: 4
   feature: 4
