@@ -50,15 +50,19 @@ Run the same fixture and repetition ID in every configuration. Pin repository, p
 
 Each result file SHALL use `benchmark-result-v1` with `fixture_id`,
 `configuration`, `repetition_id`, `valid`, `failure_reason`,
-`fixture_fingerprint`, `repository_commit`, `prompt_file_sha256`,
-`policy_file_sha256`, `acceptance_command`, `model_provider_id`, `model_id`,
-`lockfile_sha256`, `runtime_image_id`, `acceptance_passed`,
-`review_findings` (a list of `{severity, valid, category}` records),
-`latency_seconds`, `input_tokens`, `output_tokens`, `tool_seconds`, and
-`human_ratings` (exactly two `{rater_id, correctness, evidence_quality,
-operator_effort}` records, each score 1–5) fields. The validator SHALL reject a
-result whose identity does not match the fixture record or whose acceptance
-command, environment, or artifact digest differs from the manifest.
+`fixture_fingerprint`, `repository_commit`, `prompt_file_path`,
+`prompt_file_sha256`, `policy_file_path`, `policy_file_sha256`,
+`acceptance_command`, `acceptance_cwd`, `acceptance_timeout_seconds`,
+`model_provider_id`, `model_id`, `lockfile_sha256`, `runtime_image_id`, `seed`,
+`acceptance_passed`, `review_findings` (a list of `{severity, valid, category}`
+records), `latency_seconds`, `input_tokens`, `output_tokens`, `tool_seconds`,
+and `human_ratings` (exactly two `{rater_id, correctness, evidence_quality,
+operator_effort}` records, each score 1–5) fields. `fixture_fingerprint` is the
+lowercase SHA-256 of canonical UTF-8 JSON containing every fixture identity
+field except repetition and result fields, with object keys sorted and no
+whitespace. The validator SHALL reject a result whose identity does not match
+the fixture record or whose acceptance command, environment, or artifact digest
+differs from the manifest.
 
 ## Readiness gates
 

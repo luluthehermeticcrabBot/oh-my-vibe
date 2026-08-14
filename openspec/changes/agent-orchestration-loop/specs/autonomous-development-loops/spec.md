@@ -48,6 +48,10 @@ The system SHALL capture a `WorkspaceBaseline` containing repository identity, w
 - **WHEN** two disposition requests target the same workspace generation and expected tuple-set digest
 - **THEN** only the first compare-and-set of the workspace's `active_disposition_claim` from empty to its unique claim token can transition to `confirmed`/`applied`; the other receives `disposition_conflict`, and the workspace remains retained
 
+#### Scenario: Failed disposition retry
+- **WHEN** a confirmed disposition cannot be applied because the workspace diverged
+- **THEN** it transitions to `blocked`, clears its claim atomically, retains the workspace, and requires a new disposition ID with fresh generation/digest validation for retry
+
 ### Requirement: Run progresses through bounded workflow states
 
 The system SHALL expose the states `planning`, `implementing`, `verifying`, `reviewing`, `fixing`, `completed`, `failed`, `cancelled`, and `blocked`. A run MUST move through valid transitions only and MUST record the reason for terminal or blocked states.

@@ -9,10 +9,15 @@ required_fixture_fields:
   - id
   - category
   - repository_commit
+  - prompt_file_path
   - prompt_file_sha256
+  - policy_file_path
   - policy_file_sha256
   - acceptance_command
+  - acceptance_cwd
+  - acceptance_timeout_seconds
   - model_provider_id
+  - model_id
   - lockfile_sha256
   - runtime_image_id
   - seed
