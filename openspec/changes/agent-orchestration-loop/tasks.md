@@ -10,7 +10,7 @@
 - [ ] 2.1 Integrate run policies with existing permission, sandbox, and approval resolution so child capabilities cannot exceed the parent policy.
 - [ ] 2.2 Add read-only explorer/reviewer execution and single-writer implementer execution using explicit workspace identities.
 - [ ] 2.3 Add typed workspace-state detection for dirty/staged/untracked/ignored files, active sessions, live runs, and linked worktrees; implement `reject_dirty`, `isolated_worktree`, and `snapshot` policies, the versioned snapshot manifest, expected-state restore/remove preconditions, `workspace_conflict`, allocation/restore failure blocking, cancellation retention, and explicit cleanup confirmation tests.
-- [ ] 2.4 Add a canonical server-derived diff and `ScopeManifest` matcher covering includes/excludes, create/modify/delete/rename, symlinks, generated files, untracked files, and deterministic `scope_violation` retention behavior.
+- [ ] 2.4 Add a canonical server-derived diff and `ScopeManifest` matcher using normalized POSIX paths, bytewise ordering, exclude precedence, explicit rename/delete/add representation, symlink targets, generated/ignored policy, untracked files, and deterministic `scope_violation` retention behavior.
 
 ## 3. Delivery surfaces and persistence
 
@@ -28,8 +28,8 @@
 
 ## 5. Evaluation and documentation
 
-- [ ] 5.1 Add `benchmarks/agent-orchestration-v1/fixture-manifest.yaml` and its protocol document with at least 12 representative tasks (four bug fixes, four features, four refactors), schema fields for task revision/prompt/policy/seed/acceptance tests/environment, and three valid repetitions for each comparison configuration.
-- [ ] 5.2 Implement machine-readable metric formulas, invalid-repetition handling, reviewer/human rating rubric, median/p90 reporting, and readiness gates: no worse functional success or regression rate than single-agent, at least 0.25 mean usefulness improvement or review-precision improvement, and no more than 2x median latency or cost proxy; keep the feature opt-in when the gate fails.
+- [ ] 5.1 Replace the planning-only benchmark schema with an executable immutable fixture manifest containing at least 12 tasks (four bug fixes, four features, four refactors), exact repository commits, digested prompt/policy files, executable acceptance commands, model/provider and lockfile/runtime identities, seeds, and three paired repetitions per configuration; fail validation on missing artifacts.
+- [ ] 5.2 Implement paired metric formulas, invalid-pair handling, undefined review-precision handling, fixed-unit token/tool-time cost proxy, anchored two-rater usefulness rubric, median/p90 reporting, and readiness gates: no worse functional success or regression rate than single-agent, at least 0.25 improvement in review precision or usefulness, and no more than 2x median latency or cost proxy; keep the feature opt-in when the gate fails.
 - [ ] 5.3 Document explicit configuration, safety boundaries, lifecycle states, recovery limitations, and evidence semantics.
 - [ ] 5.4 Update README, CHANGELOG, and project orchestration documentation with the first shipped wedge and its non-goals.
 - [ ] 5.5 Run strict OpenSpec validation and the focused/canonical test gates before implementation PR review.
