@@ -1,0 +1,69 @@
+version: 1
+status: planning_schema
+suite_id: agent-orchestration-v1
+implementation_owner: task-5.1
+artifact_contract: >-
+  The implementation PR must replace this planning schema with immutable fixture
+  artifacts before any benchmark result can be considered valid.
+required_fixture_fields:
+  - id
+  - category
+  - repository_commit
+  - prompt_file_path
+  - prompt_file_sha256
+  - policy_file_path
+  - policy_file_sha256
+  - acceptance_command
+  - acceptance_cwd
+  - acceptance_timeout_seconds
+  - model_provider_id
+  - model_id
+  - lockfile_sha256
+  - runtime_image_id
+  - seed
+  - repetitions
+required_categories:
+  bug_fix: 4
+  feature: 4
+  refactor: 4
+repetitions_per_configuration: 3
+repetition_record:
+  required_fields: [fixture_id, configuration, repetition_id, seed, result_path]
+  pairing_key: [fixture_id, configuration, repetition_id]
+  result_schema: benchmark-result-v1
+artifact_root: implementation-task-5.1-must-provide-immutable-root
+result_schema: implementation-task-5.1-must-provide-benchmark-result-v1
+configurations:
+  - single-agent
+  - explorer-implementer
+  - implementer-reviewer
+repetitions:
+  record_fields: [fixture_id, configuration, repetition_id, seed, result_path]
+  fixture_id_source: containing_fixture.id
+  seed_source: containing_fixture.seed
+  result_schema: benchmark-result-v1
+fixtures:
+  - id: bug-01
+    category: bug_fix
+  - id: bug-02
+    category: bug_fix
+  - id: bug-03
+    category: bug_fix
+  - id: bug-04
+    category: bug_fix
+  - id: feature-01
+    category: feature
+  - id: feature-02
+    category: feature
+  - id: feature-03
+    category: feature
+  - id: feature-04
+    category: feature
+  - id: refactor-01
+    category: refactor
+  - id: refactor-02
+    category: refactor
+  - id: refactor-03
+    category: refactor
+  - id: refactor-04
+    category: refactor
