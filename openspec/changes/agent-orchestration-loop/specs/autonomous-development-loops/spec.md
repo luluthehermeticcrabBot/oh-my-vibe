@@ -60,6 +60,10 @@ The system SHALL capture a `WorkspaceBaseline` containing repository identity, w
 - **WHEN** a worker pauses after lease validation and its claim is reconciled or superseded before the next filesystem mutation
 - **THEN** the serialized mutation executor rejects the mutation with `fence_lost` before touching the filesystem and records no mutation intent for the stale token
 
+#### Scenario: Lease expiry during mutation
+- **WHEN** a lease deadline passes while a mutation executor critical section is running
+- **THEN** expiry reconciliation waits for that section's linearization point; the operation is recorded as `applied` or `unknown` before any new claim can supersede it
+
 ### Requirement: Run progresses through bounded workflow states
 
 The system SHALL expose the states `planning`, `implementing`, `verifying`, `reviewing`, `fixing`, `completed`, `failed`, `cancelled`, and `blocked`. A run MUST move through valid transitions only and MUST record the reason for terminal or blocked states.

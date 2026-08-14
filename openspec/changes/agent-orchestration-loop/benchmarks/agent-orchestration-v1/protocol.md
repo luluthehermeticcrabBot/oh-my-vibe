@@ -48,10 +48,12 @@ backslashes, and control scalars U+0000–U+001F use JSON escapes (`\\b`, `\\t`,
 `\\n`, `\\f`, `\\r`, or lowercase `\\u00XX`), `/` is not escaped, numbers use
 finite JSON shortest decimal form (no NaN/Infinity/-0), booleans/null use JSON
 literals, arrays preserve manifest order, separators are `,` and `:`, and no
-trailing newline is hashed. Result fingerprints use this identical serializer
-and explicitly include the same fixture identity plus configuration and
-repetition_id. This same canonicalization is used by manifest and result
-validators.
+trailing newline is hashed. A result has a separate `result_fingerprint`, the
+lowercase SHA-256 of the same canonical serialization after adding
+`configuration`, `repetition_id`, and `seed` to the fixture identity object.
+`fixture_fingerprint` in a result MUST equal the manifest fixture fingerprint;
+`result_fingerprint` MUST equal the computed repetition fingerprint. This same
+canonicalization is used by manifest and result validators.
 
 ## Execution protocol
 
@@ -73,11 +75,13 @@ containing fixture's `seed`, and `result_path`; the pairing key is exactly
 requires exactly three unique repetition IDs. Each result file SHALL use
 `benchmark-result-v1` with `fixture_id`,
 `configuration`, `repetition_id`, `valid`, `failure_reason`,
-`fixture_fingerprint`, `repository_commit`, `prompt_file_path`,
+`fixture_fingerprint`, `result_fingerprint`, `repository_commit`, `prompt_file_path`,
 `prompt_file_sha256`, `policy_file_path`, `policy_file_sha256`,
 `acceptance_command`, `acceptance_cwd`, `acceptance_timeout_seconds`,
 `model_provider_id`, `model_id`, `lockfile_sha256`, `runtime_image_id`, `seed`,
-`acceptance_passed`, `review_findings` (a list of `{severity, valid, category}`
+`acceptance_outcomes` (a list of `{test_id, passed, exit_code, duration_seconds,
+stdout_sha256, stderr_sha256}` records), `acceptance_passed` (the conjunction
+of those outcomes), `review_findings` (a list of `{severity, category, valid}`
 records), `latency_seconds`, `input_tokens`, `output_tokens`, `tool_seconds`,
 and `human_ratings` (exactly two `{rater_id, correctness, evidence_quality,
 operator_effort}` records, each score 1–5) fields. `fixture_fingerprint` is the
@@ -96,6 +100,15 @@ partial, and complete reproducible evidence; `operator_effort` is inverted so
 distinct non-empty `rater_id` values are required; missing, duplicate,
 non-integer, or out-of-range ratings invalidate the repetition and exclude it
 from usefulness aggregation.
+
+The only finding severities are `blocking`, `major`, and `minor`; the only
+categories are `correctness`, `safety`, `compatibility`, `scope`, `evidence`,
+and `cosmetic`. A finding is blocking exactly when `severity=blocking` and
+`valid=true`; `review_precision` is valid blocking findings divided by all
+blocking findings, with zero denominator reported as undefined. Acceptance
+outcomes are keyed by unique non-empty `test_id`; duplicate IDs, missing exit
+codes/digests, or a mismatch between the outcome conjunction and
+`acceptance_passed` invalidate the repetition.
 
 ## Readiness gates
 
