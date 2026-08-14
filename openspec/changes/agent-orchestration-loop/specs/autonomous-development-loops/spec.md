@@ -16,6 +16,22 @@ The system SHALL allow a user or supported client to start an autonomous develop
 - **WHEN** a user starts an ordinary coding session without requesting an autonomous run
 - **THEN** the system uses the existing single-agent path and does not create an autonomous-run record
 
+### Requirement: Run protects existing workspace changes
+
+The system SHALL capture the starting commit, index state, worktree identity, and declared scope before starting a write-capable run. A dirty or occupied workspace MUST be rejected by default unless the user explicitly selects a non-destructive policy such as an isolated worktree or an approved snapshot. Run cleanup MUST NOT delete or overwrite user changes without explicit confirmation.
+
+#### Scenario: Dirty primary workspace
+- **WHEN** a user starts a write-capable run in a workspace with uncommitted or staged changes and no isolation policy
+- **THEN** the run is rejected before child work starts and reports the conflicting workspace state
+
+#### Scenario: Isolated workspace policy
+- **WHEN** a user explicitly selects an isolated worktree for a dirty primary workspace
+- **THEN** the run records both workspace identities, performs writes only in the isolated worktree, and leaves the primary changes untouched
+
+#### Scenario: Cancellation with changes
+- **WHEN** a run is cancelled or fails after producing workspace changes
+- **THEN** cleanup preserves those changes or requires explicit confirmation before removal, and the final evidence names the retained workspace
+
 ### Requirement: Run progresses through bounded workflow states
 
 The system SHALL expose the states `planning`, `implementing`, `verifying`, `reviewing`, `fixing`, `completed`, `failed`, `cancelled`, and `blocked`. A run MUST move through valid transitions only and MUST record the reason for terminal or blocked states.
@@ -36,9 +52,13 @@ The system SHALL expose the states `planning`, `implementing`, `verifying`, `rev
 
 The system SHALL enforce configured limits for wall-clock duration, total turns, child runs, and review/fix iterations. A user MUST be able to cancel a live run, and cancellation MUST stop or detach child work without silently applying unverified changes.
 
-#### Scenario: Budget exhaustion
+#### Scenario: Policy budget exhaustion
 - **WHEN** any configured run budget is exhausted
-- **THEN** the run becomes `blocked` or `failed` with the exhausted budget named and no further child work is scheduled
+- **THEN** the run becomes `blocked`, records the exhausted budget and stop reason, remains resumable only through an explicit new budget policy, and schedules no further child work
+
+#### Scenario: Internal execution failure
+- **WHEN** a child or coordinator encounters an unrecoverable internal execution error unrelated to a configured budget
+- **THEN** the run becomes `failed`, records the error classification and stop reason, and schedules no further child work
 
 #### Scenario: User cancellation
 - **WHEN** a user cancels a live run

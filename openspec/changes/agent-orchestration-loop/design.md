@@ -33,6 +33,12 @@ Represent transitions and evidence as typed models with stable run, child, revis
 
 Alternative rejected: infer state from free-form child messages or transcript text. That makes cancellation, stale review detection, and automation unreliable.
 
+### 2a. Workspace identity and scope are first-class inputs
+
+At run start, the coordinator records the repository commit, index/worktree dirty state, workspace path/identity, and a scope manifest. A write-capable run refuses a dirty primary workspace unless an explicit isolated-worktree or snapshot policy is selected. Every child result carries changed paths and source revision; reducers reject out-of-scope changes even when the revision is current. Cleanup is non-destructive by default and retains a changed workspace for explicit user disposition.
+
+Alternative rejected: treating an exact commit hash as sufficient. A clean commit does not describe staged/uncommitted content or whether a child modified files outside the task boundary.
+
 ### 3. One writer by default; isolated parallelism as a guarded extension
 
 The first loop uses one implementer workspace and read-only parallel exploration/review where safe. Write-capable parallel children require independently prepared worktrees and a reducer that checks overlapping paths and exact revisions before applying a result.
@@ -48,6 +54,8 @@ Alternative rejected: treating reviewer prose or a green subset as merge readine
 ### 5. Policy is inherited, never expanded
 
 Child capabilities are the intersection of the run policy, parent permissions, and child role declaration. Deterministic safety rules and explicit human denial remain authoritative. The orchestration layer cannot bypass tool approval or sandbox policy.
+
+Escalation is only available for a capability the parent policy permits but the child role omitted. A deterministic or parent-denied capability fails closed and cannot become allowed through a child or user approval prompt.
 
 ## Risks / Trade-offs
 

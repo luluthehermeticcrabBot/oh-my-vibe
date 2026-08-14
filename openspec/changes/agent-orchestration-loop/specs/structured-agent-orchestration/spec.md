@@ -28,6 +28,18 @@ The system SHALL require separate isolated workspaces for concurrent children th
 - **WHEN** parallel child outputs modify overlapping paths incompatibly
 - **THEN** the reducer reports a conflict and leaves the primary workspace unchanged
 
+### Requirement: Run enforces declared change scope
+
+The system SHALL capture a typed scope manifest before write-capable work begins and SHALL require each child result to report its changed paths. A result that changes paths outside the manifest MUST be rejected or held for explicit user approval, even when its source revision is current.
+
+#### Scenario: In-scope changes
+- **WHEN** a child changes only paths allowed by the run scope and returns those paths in its result
+- **THEN** the reducer can consider the result for application after the revision and policy checks pass
+
+#### Scenario: Same-head out-of-scope change
+- **WHEN** a child changes a path outside the declared scope without changing the target revision
+- **THEN** the reducer rejects the result or pauses for explicit approval and leaves the primary workspace unchanged
+
 ### Requirement: Review results are revision-bound
 
 The system SHALL bind every review request and result to an exact source revision and SHALL reject or mark stale any result whose source revision differs from the current target revision.
@@ -44,9 +56,13 @@ The system SHALL bind every review request and result to an exact source revisio
 
 The system SHALL enforce parent-approved capabilities, deterministic safety policy, and explicit human denial before child tool execution. A child MUST NOT grant itself broader write, shell, network, credential, or delegation access than the parent run permits.
 
-#### Scenario: Child requests disallowed capability
-- **WHEN** a child attempts an operation outside its declared or parent-approved capabilities
-- **THEN** the operation is denied or escalated for approval and the denial is recorded in the child evidence
+#### Scenario: Child requests a parent-permitted capability
+- **WHEN** a child requests a capability allowed by the parent policy but omitted from its narrower role declaration
+- **THEN** the operation may be escalated for explicit approval without expanding the parent policy, and the decision is recorded
+
+#### Scenario: Child requests a parent-denied capability
+- **WHEN** a child attempts an operation denied by deterministic safety policy or the parent run policy
+- **THEN** the operation fails closed, cannot be granted by child or user approval, and the denial is recorded in child evidence
 
 ### Requirement: Child lifecycle is observable and recoverable
 
