@@ -56,6 +56,10 @@ The system SHALL capture a `WorkspaceBaseline` containing repository identity, w
 - **WHEN** the coordinator dies after claiming a disposition and before recording its filesystem result
 - **THEN** startup or lease-expiry reconciliation uses the fenced claim token to determine whether `applied` was durably recorded; otherwise it records `blocked` with `coordinator_lost`, clears the claim atomically, retains the workspace, and permits a new disposition after fresh generation/digest validation
 
+#### Scenario: Stale worker loses mutation fence
+- **WHEN** a worker pauses after lease validation and its claim is reconciled or superseded before the next filesystem mutation
+- **THEN** the serialized mutation executor rejects the mutation with `fence_lost` before touching the filesystem and records no mutation intent for the stale token
+
 ### Requirement: Run progresses through bounded workflow states
 
 The system SHALL expose the states `planning`, `implementing`, `verifying`, `reviewing`, `fixing`, `completed`, `failed`, `cancelled`, and `blocked`. A run MUST move through valid transitions only and MUST record the reason for terminal or blocked states.

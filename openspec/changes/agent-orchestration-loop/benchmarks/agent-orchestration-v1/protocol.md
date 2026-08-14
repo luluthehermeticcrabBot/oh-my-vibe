@@ -24,8 +24,8 @@ model_id: string
 lockfile_sha256: 64-hex SHA
 runtime_image_id: string
 seed: integer
-repetition_ids:
-  - {configuration: string, repetition_id: string, result_path: string}
+repetitions:
+  - {fixture_id: string, configuration: string, repetition_id: string, seed: integer, result_path: string}
 ```
 
 Artifact paths SHALL be repository-relative or immutable content-addressed
@@ -40,7 +40,7 @@ The fixture identity field set is exactly: `id`, `category`,
 `policy_file_path`, `policy_file_sha256`, `acceptance_command`,
 `acceptance_cwd`, `acceptance_timeout_seconds`, `model_provider_id`, `model_id`,
 `lockfile_sha256`, `runtime_image_id`, and `seed`. Suite-level `artifact_root`,
-`result_schema`, and `repetition_ids` are excluded from the fixture identity.
+`result_schema`, `artifact_root`, and `repetitions` are excluded from the fixture identity.
 `fixture_fingerprint` is the lowercase SHA-256 of canonical UTF-8 JSON of that
 exact field set: keys are sorted lexicographically, every string is NFC-normalized,
 numbers use JSON shortest decimal form, booleans/null use JSON literals, arrays
@@ -60,7 +60,12 @@ Run the same fixture and repetition ID in every configuration. Pin repository, p
 - `cost_proxy`: model input tokens + model output tokens + tool wall-time seconds, reported in fixed units.
 - Report median and p90 latency and cost, sample counts, paired IDs, and invalid repetitions.
 
-Each result file SHALL use `benchmark-result-v1` with `fixture_id`,
+Each repetition record SHALL contain `fixture_id` equal to its containing
+fixture's `id`, `configuration`, `repetition_id`, `seed` equal to its
+containing fixture's `seed`, and `result_path`; the pairing key is exactly
+`(fixture_id, configuration, repetition_id)`, and every fixture/configuration
+requires exactly three unique repetition IDs. Each result file SHALL use
+`benchmark-result-v1` with `fixture_id`,
 `configuration`, `repetition_id`, `valid`, `failure_reason`,
 `fixture_fingerprint`, `repository_commit`, `prompt_file_path`,
 `prompt_file_sha256`, `policy_file_path`, `policy_file_sha256`,

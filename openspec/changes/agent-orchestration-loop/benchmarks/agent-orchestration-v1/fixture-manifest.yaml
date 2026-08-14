@@ -21,7 +21,7 @@ required_fixture_fields:
   - lockfile_sha256
   - runtime_image_id
   - seed
-  - repetition_ids
+  - repetitions
 required_categories:
   bug_fix: 4
   feature: 4
@@ -37,6 +37,11 @@ configurations:
   - single-agent
   - explorer-implementer
   - implementer-reviewer
+repetitions:
+  record_fields: [fixture_id, configuration, repetition_id, seed, result_path]
+  fixture_id_source: containing_fixture.id
+  seed_source: containing_fixture.seed
+  result_schema: benchmark-result-v1
 fixtures:
   - id: bug-01
     category: bug_fix
