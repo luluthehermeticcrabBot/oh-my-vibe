@@ -44,6 +44,10 @@ The system SHALL capture a `WorkspaceBaseline` containing repository identity, w
 - **WHEN** a run ends with run-created changes
 - **THEN** cleanup computes the diff against the immutable baseline, retains or exports the changed workspace by default, and can remove it only after an explicit confirmation naming the workspace and changed paths
 
+#### Scenario: Concurrent disposition
+- **WHEN** two disposition requests target the same workspace and expected tuple-set digest
+- **THEN** only the first compare-and-set from `pending` with the matching digest can transition to `confirmed`/`applied`; the other receives `disposition_conflict`, and the workspace remains retained
+
 ### Requirement: Run progresses through bounded workflow states
 
 The system SHALL expose the states `planning`, `implementing`, `verifying`, `reviewing`, `fixing`, `completed`, `failed`, `cancelled`, and `blocked`. A run MUST move through valid transitions only and MUST record the reason for terminal or blocked states.
@@ -118,7 +122,7 @@ The server SHALL expose versioned `autonomous-run/start`, `autonomous-run/get`, 
 
 ### Requirement: Run events have ordered replay semantics
 
-Every run event SHALL use a versioned envelope containing `protocol_version`, `run_id`, `event_id`, monotonic per-run `sequence`, `timestamp`, `event_type`, `state_revision`, and typed payload. A watermark SHALL identify the last contiguous sequence applied by a client. Replay SHALL return events strictly after the requested watermark in sequence order, report a gap when history is unavailable, and require snapshot replacement before further events. Duplicate delivery SHALL be harmless by event ID/sequence, and each mutating RPC SHALL return its authoritative response before its corresponding notification is eligible for delivery.
+Every run event SHALL use a versioned envelope containing `protocol_version`, `run_id`, `event_id`, monotonic per-run `sequence`, `timestamp`, `event_type`, `state_revision`, and typed payload. The authoritative run projection, state revision, event record, terminal evidence, and replay watermark SHALL be committed in one durable transaction; sequence allocation occurs inside that transaction and is never reused. A watermark SHALL identify the last contiguous sequence applied by a client. Replay SHALL return events strictly after the requested watermark in sequence order, report a gap when history is unavailable, and require snapshot replacement before further events. A replacement snapshot SHALL include the exact replacement watermark and state revision and SHALL be acknowledged by the client before incremental delivery resumes. Duplicate delivery SHALL be harmless by event ID/sequence, and each mutating RPC SHALL return its authoritative response before its corresponding notification is eligible for delivery. Recovery SHALL either replay the committed event or return a consistent snapshot-plus-watermark; it MUST NOT expose a committed state with an absent event.
 
 #### Scenario: Ordered replay
 - **WHEN** a client requests events after watermark sequence 7
@@ -131,6 +135,14 @@ Every run event SHALL use a versioned envelope containing `protocol_version`, `r
 #### Scenario: Duplicate event
 - **WHEN** a client receives an event ID or sequence it has already applied
 - **THEN** it ignores the duplicate without changing the projection or watermark
+
+#### Scenario: Atomic state and event commit
+- **WHEN** a state mutation and event append are committed
+- **THEN** both become durable together with one sequence and revision, or neither is visible after recovery
+
+#### Scenario: Snapshot replacement acknowledgment
+- **WHEN** a client receives `event_gap`
+- **THEN** it replaces its projection with the supplied snapshot, acknowledges the replacement watermark, and receives no incremental event until that acknowledgment
 
 ### Requirement: Existing single-agent behavior remains compatible
 

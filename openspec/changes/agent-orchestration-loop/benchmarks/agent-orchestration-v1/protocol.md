@@ -6,6 +6,27 @@ This planning document defines the contract for task 5.1; it is not an executabl
 
 Each fixture must provide the exact repository commit, SHA-256 digests for prompt and policy files, an executable acceptance command, model/provider identifier, dependency-lock digest, runtime image identifier, deterministic seed, and three paired repetition IDs for each configuration. The committed planning manifest lists the required 12 fixture IDs and category counts.
 
+The replacement manifest SHALL use this record shape:
+
+```yaml
+fixture:
+  id: string
+  category: bug_fix|feature|refactor
+  repository_commit: 40-hex SHA
+  prompt_file: {path: string, sha256: 64-hex SHA}
+  policy_file: {path: string, sha256: 64-hex SHA}
+  acceptance: {command: string, cwd: string, timeout_seconds: integer}
+  environment: {provider_id: string, model_id: string, lockfile_sha256: 64-hex SHA, runtime_image_id: string}
+  seed: integer
+  repetitions:
+    - {configuration: string, repetition_id: string, result_path: string}
+```
+
+Artifact paths SHALL be repository-relative or immutable content-addressed
+URIs; absolute paths and floating branch/tag references are invalid. The
+validator SHALL resolve every path, verify every digest, require exactly three
+repetition records per configuration, and reject duplicate pairing keys.
+
 ## Execution protocol
 
 Run the same fixture and repetition ID in every configuration. Pin repository, prompt, policy, provider, lockfile, runtime image, and seed. A repetition is valid only when setup, agent execution, and acceptance tests produce attributable results. Invalid repetitions invalidate the pair across all configurations and are reported; fewer than two valid repetitions makes that fixture inconclusive.
@@ -18,6 +39,13 @@ Run the same fixture and repetition ID in every configuration. Pin repository, p
 - `usefulness`: mean of two independent ratings using anchored 1–5 criteria for correctness, evidence quality, and operator effort.
 - `cost_proxy`: model input tokens + model output tokens + tool wall-time seconds, reported in fixed units.
 - Report median and p90 latency and cost, sample counts, paired IDs, and invalid repetitions.
+
+Each result file SHALL use `benchmark-result-v1` with `fixture_id`,
+`configuration`, `repetition_id`, `valid`, `failure_reason`,
+`acceptance_passed`, `review_findings`, `latency_seconds`, `input_tokens`,
+`output_tokens`, `tool_seconds`, and `human_ratings` fields. The validator
+SHALL reject a result whose identity does not match the fixture record or whose
+acceptance command, environment, or artifact digest differs from the manifest.
 
 ## Readiness gates
 

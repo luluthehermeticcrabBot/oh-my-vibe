@@ -51,3 +51,14 @@ Compare these configurations on representative Oh My Vibe maintenance tasks:
 5. parallel isolated implementations plus deterministic selection.
 
 Record functional success, regression rate, review precision, wall-clock time, token cost, number of tool calls, and human-rated usefulness. Report median and tail behavior, not only best-of-N results.
+
+The planning benchmark schema is intentionally non-runnable until task 5.1
+replaces it with immutable artifact references. The replacement manifest must
+define one record per fixture/configuration/repetition containing the exact
+repository commit, prompt and policy digests, acceptance command and execution
+environment, provider/model identifier, dependency-lock digest, seed, and
+result path. Results must use paired repetition IDs, include validity and
+failure reason, and contain machine-readable acceptance outcomes, review
+findings, latency, token/tool-time cost proxy, and two anchored human ratings.
+Missing artifacts, unpinned environments, and fewer than two valid paired
+repetitions are inconclusive rather than passing.

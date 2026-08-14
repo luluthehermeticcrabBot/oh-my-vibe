@@ -17,11 +17,19 @@ required_fixture_fields:
   - runtime_image_id
   - seed
   - repetition_ids
+  - artifact_root
+  - result_schema
 required_categories:
   bug_fix: 4
   feature: 4
   refactor: 4
 repetitions_per_configuration: 3
+repetition_record:
+  required_fields: [fixture_id, configuration, repetition_id, seed, result_path]
+  pairing_key: [fixture_id, repetition_id]
+  result_schema: benchmark-result-v1
+artifact_root: implementation-task-5.1-must-provide-immutable-root
+result_schema: implementation-task-5.1-must-provide-benchmark-result-v1
 configurations:
   - single-agent
   - explorer-implementer

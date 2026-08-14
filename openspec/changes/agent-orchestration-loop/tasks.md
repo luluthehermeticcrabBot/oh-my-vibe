@@ -10,11 +10,11 @@
 - [ ] 2.1 Integrate run policies with existing permission, sandbox, and approval resolution so child capabilities cannot exceed the parent policy.
 - [ ] 2.2 Add read-only explorer/reviewer execution and single-writer implementer execution using explicit workspace identities.
 - [ ] 2.3 Add typed workspace-state detection for dirty/staged/untracked/ignored files, active sessions, live runs, and linked worktrees; implement `reject_dirty`, `isolated_worktree`, and `snapshot` policies, the versioned snapshot manifest, expected-state restore/remove preconditions, `workspace_conflict`, allocation/restore failure blocking, cancellation retention, and explicit cleanup confirmation tests.
-- [ ] 2.4 Add a canonical server-derived diff and `ScopeManifest` matcher using normalized POSIX paths, bytewise ordering, exclude precedence, explicit rename/delete/add representation, symlink targets, generated/ignored policy, untracked files, and deterministic `scope_violation` retention behavior.
+- [ ] 2.4 Add a canonical server-derived diff and `ScopeManifest` matcher using the specified UTF-8/NFC POSIX path grammar, glob grammar/conformance vectors, bytewise ordering, exclude precedence, explicit rename/delete/add representation, symlink target rules, generated/ignored policy, untracked files, and deterministic `scope_violation` retention behavior.
 
 ## 3. Delivery surfaces and persistence
 
-- [ ] 3.1 Add versioned typed app-server contracts for `autonomous-run/start`, `autonomous-run/get`, `autonomous-run/cancel`, `autonomous-run/resume`, and `autonomous-run/evidence`, including required fields, stable error codes, idempotency, authorization, revision checks, event envelope/sequence/watermark/gap behavior, response-before-notification ordering, and registration in the method catalogue.
+- [ ] 3.1 Add versioned typed app-server contracts for `autonomous-run/start`, `autonomous-run/get`, `autonomous-run/cancel`, `autonomous-run/resume`, and `autonomous-run/evidence`, including required fields, stable error codes, idempotency, authorization, revision checks, atomic state/event durability, event envelope/sequence/watermark/gap behavior, snapshot acknowledgment, response-before-notification ordering, and registration in the method catalogue.
 - [ ] 3.2 Persist run metadata and terminal evidence through the session layer with migration/version tests; document in-flight recovery limits.
 - [ ] 3.3 Add CLI commands and TUI lifecycle/progress/evidence projections without embedding coordinator logic in clients.
 - [ ] 3.4 Add ACP projections and reconnect tests for active and completed runs, asserting authoritative state replacement and linked child projections without client-created runtimes.
@@ -28,7 +28,7 @@
 
 ## 5. Evaluation and documentation
 
-- [ ] 5.1 Replace the planning-only benchmark schema with an executable immutable fixture manifest containing at least 12 tasks (four bug fixes, four features, four refactors), exact repository commits, digested prompt/policy files, executable acceptance commands, model/provider and lockfile/runtime identities, seeds, and three paired repetitions per configuration; fail validation on missing artifacts.
+- [ ] 5.1 Replace the planning-only benchmark schema with an executable immutable fixture manifest containing at least 12 tasks (four bug fixes, four features, four refactors), exact repository commits, digested prompt/policy files, executable acceptance commands and execution environments, model/provider and lockfile/runtime identities, seeds, paired repetition records, immutable artifact root, result schema, and three paired repetitions per configuration; fail validation on missing artifacts.
 - [ ] 5.2 Implement paired metric formulas, invalid-pair handling, undefined review-precision handling, fixed-unit token/tool-time cost proxy, anchored two-rater usefulness rubric, median/p90 reporting, and readiness gates: no worse functional success or regression rate than single-agent, at least 0.25 improvement in review precision or usefulness, and no more than 2x median latency or cost proxy; keep the feature opt-in when the gate fails.
 - [ ] 5.3 Document explicit configuration, safety boundaries, lifecycle states, recovery limitations, and evidence semantics.
 - [ ] 5.4 Update README, CHANGELOG, and project orchestration documentation with the first shipped wedge and its non-goals.
