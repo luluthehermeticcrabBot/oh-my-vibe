@@ -75,7 +75,7 @@ Screen {
 .le-lynx-art {
     color: $foreground;
     width: 18;
-    height: 8;
+    height: 5;
 }
 
 #update-dialog-status {

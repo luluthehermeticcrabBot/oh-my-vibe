@@ -1431,10 +1431,10 @@ NarratorStatus {
 
 .banner-chat {
     /* Pinned so the parent never renders the braille grid just to size it.
-       Braille output is a constant 8 rows (ceil(HEIGHT/4), HEIGHT=29) by
-       18 cols (ceil(WIDTH/2), WIDTH=36); see le_lynx.py / braille_renderer.py. */
-    width: 18;
-    height: 8;
+       Braille output is a constant 3 rows (ceil(HEIGHT/4), HEIGHT=12) by
+       11 cols (ceil(WIDTH/2), WIDTH=22); see le_lynx.py / braille_renderer.py. */
+    width: 12;
+    height: 3;
 }
 
 #banner-info {
@@ -1486,7 +1486,7 @@ NarratorStatus {
 .le-lynx-art {
     color: $foreground;
     width: 18;
-    height: 8;
+    height: 5;
 }
 
 .whats-new-message {
