@@ -150,7 +150,8 @@ ThemeSelectionScreen #enter-hint {
 }
 
 .onboarding-chat .le-lynx-art {
-    width: auto;
+    width: 18;
+    height: 8;
     color: $text;
 }
 
