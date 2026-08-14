@@ -18,7 +18,7 @@ The system SHALL allow a user or supported client to start an autonomous develop
 
 ### Requirement: Run protects existing workspace changes
 
-The system SHALL capture the starting commit, index state, worktree identity, and declared scope before starting a write-capable run. A dirty or occupied workspace MUST be rejected by default unless the user explicitly selects a non-destructive policy such as an isolated worktree or an approved snapshot. Run cleanup MUST NOT delete or overwrite user changes without explicit confirmation.
+The system SHALL capture a `WorkspaceBaseline` containing repository identity, worktree path, HEAD commit, index tree, tracked/untracked/ignored file status, linked-worktree occupancy, and a declared scope before starting a write-capable run. The workspace policy SHALL be one of `reject_dirty`, `isolated_worktree`, or `snapshot`; `reject_dirty` is the default. An active session, live run, or linked worktree using the target path SHALL make it occupied. Snapshots SHALL be immutable, owned by the run, and restorable only by an explicit user command. Run cleanup MUST NOT delete or overwrite baseline or run-created changes without explicit confirmation.
 
 #### Scenario: Dirty primary workspace
 - **WHEN** a user starts a write-capable run in a workspace with uncommitted or staged changes and no isolation policy
@@ -28,9 +28,21 @@ The system SHALL capture the starting commit, index state, worktree identity, an
 - **WHEN** a user explicitly selects an isolated worktree for a dirty primary workspace
 - **THEN** the run records both workspace identities, performs writes only in the isolated worktree, and leaves the primary changes untouched
 
+#### Scenario: Occupied workspace
+- **WHEN** the target path is used by an active session, live run, or linked worktree
+- **THEN** the run is rejected with `workspace_occupied` unless `isolated_worktree` selects a distinct path, and no files are changed
+
+#### Scenario: Snapshot policy
+- **WHEN** the user selects `snapshot` for a dirty but unoccupied workspace
+- **THEN** the server creates and records an immutable run-owned snapshot of the baseline, runs only after snapshot success, and reports snapshot creation failure without starting child work
+
 #### Scenario: Cancellation with changes
 - **WHEN** a run is cancelled or fails after producing workspace changes
 - **THEN** cleanup preserves those changes or requires explicit confirmation before removal, and the final evidence names the retained workspace
+
+#### Scenario: Cleanup disposition
+- **WHEN** a run ends with run-created changes
+- **THEN** cleanup computes the diff against the immutable baseline, retains or exports the changed workspace by default, and can remove it only after an explicit confirmation naming the workspace and changed paths
 
 ### Requirement: Run progresses through bounded workflow states
 
@@ -75,3 +87,35 @@ The system SHALL retain the target revision, state transitions, child-task ident
 #### Scenario: Validation unavailable
 - **WHEN** a required check cannot run because of environment or dependency failure
 - **THEN** the report marks that check unavailable and does not claim the run is verified
+
+### Requirement: Run exposes typed lifecycle commands
+
+The server SHALL expose versioned `autonomous-run/start`, `autonomous-run/get`, `autonomous-run/cancel`, `autonomous-run/resume`, and `autonomous-run/evidence` operations. Start requests SHALL contain a goal, workspace, policy, and idempotency key; responses SHALL contain `protocol_version`, `run_id`, state, workspace baseline, and scope. Get/evidence responses SHALL contain the authoritative state, transition sequence, child links, evidence, and stop reason. Invalid transitions, stale run revisions, denied actions, and missing runs SHALL use stable error codes. Resume SHALL require the run ID and an explicit policy for any changed budget or workspace.
+
+#### Scenario: Start and inspect
+- **WHEN** a client sends a valid versioned start request
+- **THEN** the server returns a stable run ID and `planning` projection, and a subsequent get returns the same protocol version, baseline, scope, and transition sequence
+
+#### Scenario: Idempotent retry
+- **WHEN** the same client retries a start request with the same idempotency key
+- **THEN** the server returns the original run ID without creating a second run
+
+#### Scenario: Invalid or stale command
+- **WHEN** a client sends a cancel/resume command for a missing run, invalid state, or stale run revision
+- **THEN** the server returns `run_not_found`, `invalid_transition`, or `stale_run` respectively and does not mutate the run
+
+#### Scenario: Reconnect and resume
+- **WHEN** a client reconnects or explicitly resumes a persisted run
+- **THEN** the server returns authoritative state and ordered events from the requested watermark, and never requires the client to construct a child runtime
+
+### Requirement: Existing single-agent behavior remains compatible
+
+The system SHALL preserve existing ordinary sessions and task delegation when no autonomous-run command is requested. Existing task arguments, results, child-session links, permission errors, serialized app-server responses, defaults, and depth limits SHALL remain backward compatible.
+
+#### Scenario: Ordinary task delegation
+- **WHEN** an existing client invokes the task tool with current arguments and an allowed subagent
+- **THEN** it receives the existing result shape and child-session behavior without creating an autonomous-run record
+
+#### Scenario: Existing denial behavior
+- **WHEN** an existing client invokes a disallowed agent, exceeds subagent depth, or lacks task context
+- **THEN** it receives the existing structured error semantics and no autonomous run is created

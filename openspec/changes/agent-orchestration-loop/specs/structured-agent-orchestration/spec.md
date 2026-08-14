@@ -30,7 +30,7 @@ The system SHALL require separate isolated workspaces for concurrent children th
 
 ### Requirement: Run enforces declared change scope
 
-The system SHALL capture a typed scope manifest before write-capable work begins and SHALL require each child result to report its changed paths. A result that changes paths outside the manifest MUST be rejected or held for explicit user approval, even when its source revision is current.
+The system SHALL capture a `ScopeManifest` containing ordered include path patterns, exclude patterns, allowed operations (`create`, `modify`, `delete`, `rename`), symlink policy, generated-file policy, and a canonical baseline identity before write-capable work begins. The server SHALL derive changed paths from a canonical diff against that baseline, including tracked, staged, untracked, deleted, renamed, and symlink changes; child-reported paths are evidence only. A result outside the manifest MUST be rejected deterministically with `scope_violation`, and its workspace MUST be retained for explicit user disposition.
 
 #### Scenario: In-scope changes
 - **WHEN** a child changes only paths allowed by the run scope and returns those paths in its result
@@ -39,6 +39,14 @@ The system SHALL capture a typed scope manifest before write-capable work begins
 #### Scenario: Same-head out-of-scope change
 - **WHEN** a child changes a path outside the declared scope without changing the target revision
 - **THEN** the reducer rejects the result or pauses for explicit approval and leaves the primary workspace unchanged
+
+#### Scenario: Scope matching
+- **WHEN** a changed path matches an include pattern, no exclude pattern, and an allowed operation under the canonical diff rules
+- **THEN** the server marks it in scope and permits the reducer to continue revision and policy checks
+
+#### Scenario: Delete, rename, or symlink violation
+- **WHEN** a child deletes, renames, creates an untracked file, or changes a symlink contrary to the manifest
+- **THEN** the server reports `scope_violation`, does not apply the result to the primary workspace, and retains the child workspace
 
 ### Requirement: Review results are revision-bound
 
@@ -54,7 +62,7 @@ The system SHALL bind every review request and result to an exact source revisio
 
 ### Requirement: Child permissions cannot weaken parent policy
 
-The system SHALL enforce parent-approved capabilities, deterministic safety policy, and explicit human denial before child tool execution. A child MUST NOT grant itself broader write, shell, network, credential, or delegation access than the parent run permits.
+The system SHALL evaluate each capability in this order: deterministic safety policy, parent run policy, child role declaration, then approval policy. Capability identifiers SHALL be stable. The typed outcome SHALL be exactly one of `allowed`, `role_denied`, `parent_denied`, `deterministically_denied`, or `approval_required`. Only `approval_required` may create an approval request, and only when the parent policy permits the capability. Approval responses SHALL identify the run, child, capability, approver, decision, expiry, and retry boundary.
 
 #### Scenario: Child requests a parent-permitted capability
 - **WHEN** a child requests a capability allowed by the parent policy but omitted from its narrower role declaration
@@ -63,6 +71,14 @@ The system SHALL enforce parent-approved capabilities, deterministic safety poli
 #### Scenario: Child requests a parent-denied capability
 - **WHEN** a child attempts an operation denied by deterministic safety policy or the parent run policy
 - **THEN** the operation fails closed, cannot be granted by child or user approval, and the denial is recorded in child evidence
+
+#### Scenario: Capability decision order
+- **WHEN** a child requests a capability
+- **THEN** the server evaluates deterministic policy before parent and role policy, returns one typed outcome, and records the policy inputs and outcome
+
+#### Scenario: Approval audit
+- **WHEN** a parent-permitted but role-narrowed capability requires approval
+- **THEN** the server emits one typed approval request and records the approving authority, decision, expiry, and retry result; an expired approval cannot authorize a later attempt
 
 ### Requirement: Child lifecycle is observable and recoverable
 
