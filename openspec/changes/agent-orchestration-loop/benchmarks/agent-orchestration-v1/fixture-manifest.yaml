@@ -1,0 +1,99 @@
+version: 1
+suite_id: agent-orchestration-v1
+repository_revision: main-at-implementation-start
+environment:
+  runner: uv
+  python: '3.12+'
+  dependency_lock: uv.lock
+  network: disabled-unless-fixture-allows
+  model_provider: configured-test-provider
+repetitions: 3
+configurations:
+  - single-agent
+  - explorer-implementer
+  - implementer-reviewer
+fixtures:
+  - id: bug-01
+    category: bug_fix
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 1001
+    acceptance_tests: fixture/tests/bug-01
+  - id: bug-02
+    category: bug_fix
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 1002
+    acceptance_tests: fixture/tests/bug-02
+  - id: bug-03
+    category: bug_fix
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 1003
+    acceptance_tests: fixture/tests/bug-03
+  - id: bug-04
+    category: bug_fix
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 1004
+    acceptance_tests: fixture/tests/bug-04
+  - id: feature-01
+    category: feature
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 2001
+    acceptance_tests: fixture/tests/feature-01
+  - id: feature-02
+    category: feature
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 2002
+    acceptance_tests: fixture/tests/feature-02
+  - id: feature-03
+    category: feature
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 2003
+    acceptance_tests: fixture/tests/feature-03
+  - id: feature-04
+    category: feature
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 2004
+    acceptance_tests: fixture/tests/feature-04
+  - id: refactor-01
+    category: refactor
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 3001
+    acceptance_tests: fixture/tests/refactor-01
+  - id: refactor-02
+    category: refactor
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 3002
+    acceptance_tests: fixture/tests/refactor-02
+  - id: refactor-03
+    category: refactor
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 3003
+    acceptance_tests: fixture/tests/refactor-03
+  - id: refactor-04
+    category: refactor
+    repository_revision: fixture-revision
+    prompt: documented-fixture-prompt
+    policy: default-bounded
+    seed: 3004
+    acceptance_tests: fixture/tests/refactor-04

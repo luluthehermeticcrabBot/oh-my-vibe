@@ -38,7 +38,7 @@ The system SHALL capture a `ScopeManifest` containing ordered include path patte
 
 #### Scenario: Same-head out-of-scope change
 - **WHEN** a child changes a path outside the declared scope without changing the target revision
-- **THEN** the reducer rejects the result or pauses for explicit approval and leaves the primary workspace unchanged
+- **THEN** the reducer deterministically rejects the result with `scope_violation`, leaves the primary workspace unchanged, and retains the child workspace
 
 #### Scenario: Scope matching
 - **WHEN** a changed path matches an include pattern, no exclude pattern, and an allowed operation under the canonical diff rules
@@ -47,6 +47,10 @@ The system SHALL capture a `ScopeManifest` containing ordered include path patte
 #### Scenario: Delete, rename, or symlink violation
 - **WHEN** a child deletes, renames, creates an untracked file, or changes a symlink contrary to the manifest
 - **THEN** the server reports `scope_violation`, does not apply the result to the primary workspace, and retains the child workspace
+
+#### Scenario: Post-rejection disposition
+- **WHEN** a user requests disposition of a retained scope-violating workspace
+- **THEN** the server presents the canonical changed-path set and offers only explicit export, retain, or discard operations; disposition cannot approve or implicitly apply the rejected result
 
 ### Requirement: Review results are revision-bound
 

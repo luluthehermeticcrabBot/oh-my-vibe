@@ -33,7 +33,7 @@ Represent transitions and evidence as typed models with stable run, child, revis
 
 Alternative rejected: infer state from free-form child messages or transcript text. That makes cancellation, stale review detection, and automation unreliable.
 
-Budget accounting uses an atomic ledger with reserved and committed units for turns, child count, review iterations, and wall-clock deadline. Limits are inclusive; a unit cannot be reserved after the limit. When terminal causes race, precedence is: explicit user cancellation, deterministic policy denial, budget/deadline exhaustion, stale/scope rejection, child execution failure, then successful completion. The winning cause is the first atomically recorded cause at the coordinator boundary; later causes are evidence, not state changes.
+Budget accounting uses an atomic ledger with reserved and committed units for turns, child count, review iterations, and wall-clock deadline. Limits are inclusive; a unit cannot be reserved after the limit. Before terminal finalization, the coordinator collects observed causes at a revision boundary and selects the highest-priority cause using: explicit user cancellation, deterministic policy denial, budget/deadline exhaustion, stale/scope rejection, child execution failure, then successful completion. It then performs one compare-and-set from the current run revision to the terminal revision. A later cause cannot replace a finalized state and is recorded as secondary evidence.
 
 ### 2a. Workspace identity and scope are first-class inputs
 
@@ -41,7 +41,7 @@ At run start, the coordinator records the repository commit, index/worktree dirt
 
 Alternative rejected: treating an exact commit hash as sufficient. A clean commit does not describe staged/uncommitted content or whether a child modified files outside the task boundary.
 
-Workspace snapshots use the existing repository/worktree mechanism plus a run-owned immutable manifest of file content hashes and index state; they are not presented as crash recovery. The coordinator distinguishes baseline changes from run-owned changes by comparing hashes against the captured baseline. Allocation failure, restore failure, or cleanup ambiguity becomes `blocked` with the workspace retained and an explicit disposition request.
+Workspace snapshots use a run-owned immutable manifest containing repository identity, HEAD, index tree, tracked file hashes, untracked file hashes and contents, ignored-file inventory (not contents unless explicitly selected), symlink targets, and snapshot format version. They are not presented as crash recovery. The coordinator distinguishes baseline changes from run-owned changes by comparing hashes against the captured baseline. Restore or remove is permitted only when the current workspace still matches the expected baseline-plus-run-owned state; divergence returns `workspace_conflict` and retains the workspace. Allocation, snapshot, restore, or cleanup failure becomes `blocked` with the workspace retained and an explicit disposition request containing workspace ID, changed paths, and operation choices.
 
 ### 3. One writer by default; isolated parallelism as a guarded extension
 
@@ -61,7 +61,7 @@ Child capabilities are the intersection of the run policy, parent permissions, a
 
 Escalation is only available for a capability the parent policy permits but the child role omitted. A deterministic or parent-denied capability fails closed and cannot become allowed through a child or user approval prompt.
 
-The app-server contract uses versioned typed request/response models and ordered event payloads. `start` is idempotent by client key; `get` and `evidence` are read-only; `cancel` requires the current run revision; `resume` requires an explicit new policy when budgets or workspace identity changed. Clients consume projections and watermarks rather than constructing child runtimes.
+The app-server contract uses versioned typed request/response models and ordered event payloads. `start` is idempotent by client key; `get` and `evidence` are read-only; `cancel` requires the current run revision; `resume` requires an explicit new policy when budgets or workspace identity changed. Each event envelope has a per-run sequence and event ID; replay after a watermark is contiguous or returns `event_gap` with a replacement snapshot. A mutating response is committed before its notification is published. Clients consume projections and watermarks rather than constructing child runtimes.
 
 ## Risks / Trade-offs
 
@@ -82,4 +82,4 @@ The app-server contract uses versioned typed request/response models and ordered
 
 Rollback is disabling the autonomous-run feature flag and leaving existing sessions, task calls, and worktrees available through their current paths. No existing transcript format is rewritten during initial rollout.
 
-The initial benchmark gate uses at least 12 representative, versioned tasks (four each for bug fix, feature, and refactor), three repetitions per configuration in a pinned environment, and median plus p90 results. The loop is recommended only if it is no worse than single-agent on functional success and regression rate, and improves either review precision or human-rated usefulness without exceeding 2x median latency or cost proxy. If the gate is not met, the feature remains opt-in and the report records the failing dimension.
+The initial benchmark is defined by `benchmarks/agent-orchestration-v1/fixture-manifest.yaml` and its adjacent protocol document. It contains at least 12 representative, versioned tasks (four each for bug fix, feature, and refactor), fixed prompts/policies, seeds, repository revision, environment identity, and three valid repetitions per configuration. Success is the proportion of repetitions meeting all task acceptance tests; regression is the proportion introducing a failure absent in the single-agent baseline; review precision is valid blocking findings divided by all blocking findings; human usefulness uses a documented 1–5 rubric from two independent ratings. Reports contain median and p90 latency/cost and must identify invalid repetitions. The loop is recommended only if it is no worse than single-agent on functional success and regression rate, improves either review precision or mean usefulness by at least 0.25 rubric points, and does not exceed 2x median latency or cost proxy. If any gate fails, the feature remains opt-in and the machine-readable report records the failed dimensions.

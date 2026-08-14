@@ -62,7 +62,7 @@ The system SHALL expose the states `planning`, `implementing`, `verifying`, `rev
 
 ### Requirement: Run enforces budgets and cancellation
 
-The system SHALL enforce configured limits for wall-clock duration, total turns, child runs, and review/fix iterations. A user MUST be able to cancel a live run, and cancellation MUST stop or detach child work without silently applying unverified changes.
+The system SHALL enforce configured limits for wall-clock duration, total turns, child runs, and review/fix iterations using an atomic ledger with inclusive limits. A user MUST be able to cancel a live run, and cancellation MUST stop or detach child work without silently applying unverified changes. Before terminal finalization, competing causes SHALL be resolved by this fixed priority: explicit user cancellation, deterministic policy denial, budget/deadline exhaustion, stale or scope rejection, child execution failure, then success. Terminal finalization SHALL be a compare-and-set operation over the run revision; after finalization, later causes become evidence only.
 
 #### Scenario: Policy budget exhaustion
 - **WHEN** any configured run budget is exhausted
@@ -71,6 +71,14 @@ The system SHALL enforce configured limits for wall-clock duration, total turns,
 #### Scenario: Internal execution failure
 - **WHEN** a child or coordinator encounters an unrecoverable internal execution error unrelated to a configured budget
 - **THEN** the run becomes `failed`, records the error classification and stop reason, and schedules no further child work
+
+#### Scenario: Competing terminal causes
+- **WHEN** cancellation, budget exhaustion, and child failure are observed before terminal finalization
+- **THEN** the coordinator records `cancelled` as the terminal state regardless of arrival order, commits the winning cause once, and records the other causes as secondary evidence
+
+#### Scenario: Terminal finalization race
+- **WHEN** two workers attempt to finalize the same run revision
+- **THEN** exactly one compare-and-set succeeds; the losing worker cannot change state and records its cause as secondary evidence
 
 #### Scenario: User cancellation
 - **WHEN** a user cancels a live run
@@ -107,6 +115,22 @@ The server SHALL expose versioned `autonomous-run/start`, `autonomous-run/get`, 
 #### Scenario: Reconnect and resume
 - **WHEN** a client reconnects or explicitly resumes a persisted run
 - **THEN** the server returns authoritative state and ordered events from the requested watermark, and never requires the client to construct a child runtime
+
+### Requirement: Run events have ordered replay semantics
+
+Every run event SHALL use a versioned envelope containing `protocol_version`, `run_id`, `event_id`, monotonic per-run `sequence`, `timestamp`, `event_type`, `state_revision`, and typed payload. A watermark SHALL identify the last contiguous sequence applied by a client. Replay SHALL return events strictly after the requested watermark in sequence order, report a gap when history is unavailable, and require snapshot replacement before further events. Duplicate delivery SHALL be harmless by event ID/sequence, and each mutating RPC SHALL return its authoritative response before its corresponding notification is eligible for delivery.
+
+#### Scenario: Ordered replay
+- **WHEN** a client requests events after watermark sequence 7
+- **THEN** the server returns sequence 8 onward in order with no event at or before 7
+
+#### Scenario: Replay gap
+- **WHEN** the requested watermark predates retained event history
+- **THEN** the server returns a typed `event_gap` response containing the authoritative snapshot and replacement watermark before allowing incremental events
+
+#### Scenario: Duplicate event
+- **WHEN** a client receives an event ID or sequence it has already applied
+- **THEN** it ignores the duplicate without changing the projection or watermark
 
 ### Requirement: Existing single-agent behavior remains compatible
 
