@@ -6,26 +6,34 @@ This planning document defines the contract for task 5.1; it is not an executabl
 
 Each fixture must provide the exact repository commit, SHA-256 digests for prompt and policy files, an executable acceptance command, model/provider identifier, dependency-lock digest, runtime image identifier, deterministic seed, and three paired repetition IDs for each configuration. The committed planning manifest lists the required 12 fixture IDs and category counts.
 
-The replacement manifest SHALL use this record shape:
+The replacement manifest SHALL use this canonical flat record shape for every fixture:
 
 ```yaml
-fixture:
-  id: string
-  category: bug_fix|feature|refactor
-  repository_commit: 40-hex SHA
-  prompt_file: {path: string, sha256: 64-hex SHA}
-  policy_file: {path: string, sha256: 64-hex SHA}
-  acceptance: {command: string, cwd: string, timeout_seconds: integer}
-  environment: {provider_id: string, model_id: string, lockfile_sha256: 64-hex SHA, runtime_image_id: string}
-  seed: integer
-  repetitions:
-    - {configuration: string, repetition_id: string, result_path: string}
+id: string
+category: bug_fix|feature|refactor
+repository_commit: 40-hex SHA
+prompt_file_path: string
+prompt_file_sha256: 64-hex SHA
+policy_file_path: string
+policy_file_sha256: 64-hex SHA
+acceptance_command: string
+acceptance_cwd: string
+acceptance_timeout_seconds: integer
+model_provider_id: string
+model_id: string
+lockfile_sha256: 64-hex SHA
+runtime_image_id: string
+seed: integer
+repetition_ids:
+  - {configuration: string, repetition_id: string, result_path: string}
 ```
 
 Artifact paths SHALL be repository-relative or immutable content-addressed
 URIs; absolute paths and floating branch/tag references are invalid. The
 validator SHALL resolve every path, verify every digest, require exactly three
-repetition records per configuration, and reject duplicate pairing keys.
+repetition records per configuration, and reject duplicate pairing keys. The
+planning manifest is the schema declaration; task 5.1 must populate all fields
+and all 12 fixture records before execution is permitted.
 
 ## Execution protocol
 
@@ -42,10 +50,15 @@ Run the same fixture and repetition ID in every configuration. Pin repository, p
 
 Each result file SHALL use `benchmark-result-v1` with `fixture_id`,
 `configuration`, `repetition_id`, `valid`, `failure_reason`,
-`acceptance_passed`, `review_findings`, `latency_seconds`, `input_tokens`,
-`output_tokens`, `tool_seconds`, and `human_ratings` fields. The validator
-SHALL reject a result whose identity does not match the fixture record or whose
-acceptance command, environment, or artifact digest differs from the manifest.
+`fixture_fingerprint`, `repository_commit`, `prompt_file_sha256`,
+`policy_file_sha256`, `acceptance_command`, `model_provider_id`, `model_id`,
+`lockfile_sha256`, `runtime_image_id`, `acceptance_passed`,
+`review_findings` (a list of `{severity, valid, category}` records),
+`latency_seconds`, `input_tokens`, `output_tokens`, `tool_seconds`, and
+`human_ratings` (exactly two `{rater_id, correctness, evidence_quality,
+operator_effort}` records, each score 1–5) fields. The validator SHALL reject a
+result whose identity does not match the fixture record or whose acceptance
+command, environment, or artifact digest differs from the manifest.
 
 ## Readiness gates
 

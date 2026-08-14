@@ -45,8 +45,8 @@ The system SHALL capture a `WorkspaceBaseline` containing repository identity, w
 - **THEN** cleanup computes the diff against the immutable baseline, retains or exports the changed workspace by default, and can remove it only after an explicit confirmation naming the workspace and changed paths
 
 #### Scenario: Concurrent disposition
-- **WHEN** two disposition requests target the same workspace and expected tuple-set digest
-- **THEN** only the first compare-and-set from `pending` with the matching digest can transition to `confirmed`/`applied`; the other receives `disposition_conflict`, and the workspace remains retained
+- **WHEN** two disposition requests target the same workspace generation and expected tuple-set digest
+- **THEN** only the first compare-and-set of the workspace's `active_disposition_claim` from empty to its unique claim token can transition to `confirmed`/`applied`; the other receives `disposition_conflict`, and the workspace remains retained
 
 ### Requirement: Run progresses through bounded workflow states
 

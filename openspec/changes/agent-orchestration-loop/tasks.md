@@ -9,13 +9,13 @@
 
 - [ ] 2.1 Integrate run policies with existing permission, sandbox, and approval resolution so child capabilities cannot exceed the parent policy.
 - [ ] 2.2 Add read-only explorer/reviewer execution and single-writer implementer execution using explicit workspace identities.
-- [ ] 2.3 Add typed workspace-state detection for dirty/staged/untracked/ignored files, active sessions, live runs, and linked worktrees; implement `reject_dirty`, `isolated_worktree`, and `snapshot` policies, the versioned snapshot manifest, expected-state restore/remove preconditions, `workspace_conflict`, allocation/restore failure blocking, cancellation retention, and explicit cleanup confirmation tests.
+- [ ] 2.3 Add typed workspace-state detection for dirty/staged/untracked/ignored files, active sessions, live runs, and linked worktrees; implement `reject_dirty`, `isolated_worktree`, and `snapshot` policies, the versioned snapshot manifest, expected-state restore/remove preconditions, workspace-generation disposition claim CAS, `workspace_conflict`, allocation/restore failure blocking, cancellation retention, and explicit cleanup confirmation tests.
 - [ ] 2.4 Add a canonical server-derived diff and `ScopeManifest` matcher using the specified UTF-8/NFC POSIX path grammar, glob grammar/conformance vectors, bytewise ordering, exclude precedence, explicit rename/delete/add representation, symlink target rules, generated/ignored policy, untracked files, and deterministic `scope_violation` retention behavior.
 
 ## 3. Delivery surfaces and persistence
 
 - [ ] 3.1 Add versioned typed app-server contracts for `autonomous-run/start`, `autonomous-run/get`, `autonomous-run/cancel`, `autonomous-run/resume`, and `autonomous-run/evidence`, including required fields, stable error codes, idempotency, authorization, revision checks, atomic state/event durability, event envelope/sequence/watermark/gap behavior, snapshot acknowledgment, response-before-notification ordering, and registration in the method catalogue.
-- [ ] 3.2 Persist run metadata and terminal evidence through the session layer with migration/version tests; document in-flight recovery limits.
+- [ ] 3.2 Implement the server-owned autonomous-run ledger separate from ordinary session event projections, with versioned migrations, atomic projection/revision/event/evidence/watermark commits, retention metadata and `event_gap` snapshot recovery; document that live child processes and callbacks are not crash-recovered.
 - [ ] 3.3 Add CLI commands and TUI lifecycle/progress/evidence projections without embedding coordinator logic in clients.
 - [ ] 3.4 Add ACP projections and reconnect tests for active and completed runs, asserting authoritative state replacement and linked child projections without client-created runtimes.
 
