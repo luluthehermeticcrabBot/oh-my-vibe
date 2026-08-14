@@ -8,36 +8,36 @@ from textual.widgets import Static
 
 from vibe.cli.textual_ui.widgets.braille_renderer import render_braille
 
-# Original Oh My Vibe lynx artwork. The silhouette deliberately emphasizes
-# the species cues that survive at terminal size: tall ear tufts, cheek ruffs,
-# a broad face, eyes, nose, and a tapered muzzle.
-WIDTH = 24
+# Original Oh My Vibe lynx artwork. This is deliberately a whole-body,
+# side-on silhouette: tall ear tufts, cheek ruff, spotted-looking face,
+# compact tail, long legs, and paws are all retained at terminal size.
+WIDTH = 36
 HEIGHT = 20
 FRAME_INTERVAL_S = 0.24
 
 # Dot-grid artwork: two columns of dots per braille cell and four rows per cell.
 # Keeping the source as a readable silhouette makes future mascot edits safer.
 _BASE_ART = (
-    "     ##        ##     ",
-    "    ####      ####    ",
-    "    ####      ####    ",
-    "   ##  ##    ##  ##   ",
-    "   ##  ##    ##  ##   ",
-    "  ##################  ",
-    " #################### ",
-    "######################",
-    "###  ####    ####  ###",
-    "##   ####    ####   ##",
-    "##     ##    ##     ##",
-    "##                  ##",
-    "###      ####      ###",
-    " ####    ####    #### ",
-    "  ####  ######  ####  ",
-    "   ##################   ",
-    "     ####    ####     ",
-    "      ###    ###      ",
-    "       ##    ##       ",
-    "        ##  ##        ",
+    "        ##       ##                 ",
+    "       ####     ####                ",
+    "      ##  ##   ##  ##               ",
+    "     ##################             ",
+    "    #######  ####  #######          ",
+    "    ######    ##    ######          ",
+    "     ####################           ",
+    "      ##################            ",
+    "     #######################       ",
+    "   #########################  ##    ",
+    "  ########################## ###    ",
+    "  ######  ##########  ######       ",
+    "  ######  ##########  ######       ",
+    "  ######  ##########  ######       ",
+    "  ######  ##########  ######       ",
+    " ######   ######   ######          ",
+    " ######   ######   ######          ",
+    "  ####     ####     ####           ",
+    "  ####     ####     ####           ",
+    "  ####     ####     ####           ",
 )
 
 
@@ -52,31 +52,9 @@ def _dots(rows: tuple[str, ...]) -> frozenset[complex]:
 
 _BASE = _dots(_BASE_ART)
 
-# Animation is intentionally restrained: ear tufts twitch, then the eyes blink.
-_EAR_TWITCH = _dots((
-    "      ##      ##      ",
-    "     ####    ####     ",
-    "    ####      ####    ",
-    "   ##  ##    ##  ##   ",
-    "   ##  ##    ##  ##   ",
-    "  ##################  ",
-    " #################### ",
-    "######################",
-    "###  ####    ####  ###",
-    "##   ####    ####   ##",
-    "##     ##    ##     ##",
-    "##                  ##",
-    "###      ####      ###",
-    " ####    ####    #### ",
-    "  ####  ######  ####  ",
-    "   ##################   ",
-    "     ####    ####     ",
-    "      ###    ###      ",
-    "       ##    ##       ",
-    "        ##  ##        ",
-))
-
-_EYES_BLINK = _BASE - {complex(6, 8), complex(15, 8)} | {complex(6, 9), complex(15, 9)}
+# The animation stays readable: the ear tufts twitch and the lynx blinks.
+_EAR_TWITCH = _BASE - {complex(8, 0), complex(17, 0)} | {complex(7, 0), complex(18, 0)}
+_EYES_BLINK = _BASE - {complex(8, 4), complex(15, 4)}
 
 _FRAMES = (_BASE, _EAR_TWITCH, _EYES_BLINK, _BASE)
 
